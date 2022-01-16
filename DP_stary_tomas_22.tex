@@ -1,0 +1,137 @@
+% arara: xelatex
+% arara: xelatex
+% arara: xelatex
+
+
+% options:
+% thesis=B bachelor's thesis
+% thesis=M master's thesis
+% czech thesis in Czech language
+% english thesis in English language
+% hidelinks remove colour boxes around hyperlinks
+
+\documentclass[thesis=M,english]{FITthesis}[2019/12/23]
+
+%\usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
+% \usepackage[latin2]{inputenc} % LaTeX source encoded as ISO-8859-2
+% \usepackage[cp1250]{inputenc} % LaTeX source encoded as Windows-1250
+
+% \usepackage{subfig} %subfigures
+% \usepackage{amsmath} %advanced maths
+% \usepackage{amssymb} %additional math symbols
+
+\usepackage{dirtree} %directory tree visualisation
+
+% % list of acronyms
+% \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
+% \iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
+% \makeglossaries
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% EDIT THIS
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\department{Department of software engineering}
+\title{Neo4j .NET ORM}
+\authorGN{} %author's given name/names
+\authorFN{Starý} %author's surname
+\author{Tomáš} %author's name without academic degrees
+\authorWithDegrees{Bc. Tomáš Starý} %author's name with academic degrees
+\supervisor{Ing. Marek Skotnica}
+\acknowledgements{THANKS (remove entirely in case you do not with to thank anyone)}
+\abstractEN{Summarize the contents and contribution of your work in a few sentences in English language.}
+\abstractCS{V n{\v e}kolika v{\v e}t{\' a}ch shr{\v n}te obsah a p{\v r}{\' i}nos t{\' e}to pr{\' a}ce v {\v c}esk{\' e}m jazyce.}
+\placeForDeclarationOfAuthenticity{Prague}
+\keywordsCS{Replace with comma-separated list of keywords in Czech.}
+\keywordsEN{Replace with comma-separated list of keywords in English.}
+\declarationOfAuthenticityOption{1} %select as appropriate, according to the desired license (integer 1-6)
+% \website{http://site.example/thesis} %optional thesis URL
+
+
+\begin{document}
+
+% \newacronym{CVUT}{{\v C}VUT}{{\v C}esk{\' e} vysok{\' e} u{\v c}en{\' i} technick{\' e} v Praze}
+% \newacronym{FIT}{FIT}{Fakulta informa{\v c}n{\' i}ch technologi{\' i}}
+
+\setsecnumdepth{part}
+\chapter{Introduction}
+
+\section{Graphs are everywhere}
+In today's world, everything is highly connected. And graphs are an easy way to describe and visualize these relations. Graphs can help us to see connections we would otherwise catch.
+
+But in most of our applications today, we do not use them to store data, and this is mainly because when first applications were being made to take paper forms into the digital world. To keep these paper forms in digital format, we use relational databases.
+
+Since then, relational databases have been the go-to for every developer when creating a new application. Using a relational database is helpful for several reasons, mainly because the development cost is lower than using new technologies, and everyone is familiar with this type of database system. But in today's world, these benefits of the lower price of development are being diminished. Numerous problems come with using relational databases, lengthy searches for specific highly connected data, and more complex relations are the main reason why NoSQL databases have been gaining so many tractions for the last decade.
+
+The graph databases are made explicitly with relations in mind. The nature of the graph itself gives it. Every vertex can have its connection with another one or even itself. This kind of connection is not possible with a relational database where connecting two rows means creating a relationship between two tables. With the speed of finding highly connected data, users can define indexes in relational databases to help with that, but there is only so much he can do. Indexes can slow the whole system down, inserts take longer to finish, and the entire database will increase memory consumption.
+
+\subsection{What can graph databases offer us?}
+Graph databases are no silver bullet, and they cannot solve all our problems. When designing a new piece of software, we should always ask ourselves what's the best technologies for the situation we are trying to solve.
+
+We've talked about the problem with highly connected data and long searches, but how does the graph database solve this issue? The key here is that you will sooner or later find out that with more data comes more time spent on the same select with a growing relational database. This is due to numerous reasons, but the main one is that you are bound to make more costly joins with more extensive tables. With a graph database, your search will be over the same part of the graph no matter what happens with the rest of the database. Execution times will therefore be the same.
+
+
+\section{Neo4j}
+
+Neo4j is a graph database management system. Neo4j, Inc. is developing Neo4j, being described as an ACID-compliant by its developers and using native graph storage and processing. Because Neo4j is a NoSQL database, it uses its query language, named Cypher.
+
+\subsection{More about Cypher}
+
+Cypher is a query language used for querying over the Neo4j database. Its philosophy is to be easily read and understood by developers, database professionals, and business stakeholders.  Its ease of use derives from the fact that it is in accord with how we intuitively describe graphs using diagrams. \cite{robinson_graph_2015}
+
+\subsubsection{Match}
+\subsubsection{Return}
+\subsubsection{Other clauses}
+
+\section{ORM}
+ORM stands for an object-relational mapper, which is based on the concept of object-relational mapping. Object-relational mapping is the idea of being able to write queries using the object-oriented paradigm. 
+There are some limitations of what ORM can accomplish. Developers should always consider these limits before using an ORM framework. \cite{mario_hoyos_what_2018}
+
+\noindent Pros:
+\begin{itemize}
+    \item There is no need to use a second language during software development, SQL is a powerful language, but most developers don't use it too often.
+    \item ORM abstracts away from the database system.
+    \item It can lead to better performance than writing queries by ourselves.
+\end{itemize}
+Cons:
+\begin{itemize}
+    \item If you are an SQL power user, you can write queries that will perform better.
+    \item Developers have to learn how to use ORM properly.
+    \item Developers still need to know how does ORM works under the hood.
+\end{itemize}
+
+
+\bibliographystyle{iso690}
+\bibliography{mybibliographyfile}
+
+\setsecnumdepth{all}
+\appendix
+
+\chapter{Acronyms}
+% \printglossaries
+\begin{description}
+	\item[GUI] Graphical user interface
+	\item[XML] Extensible markup language
+\end{description}
+
+
+\chapter{Contents of enclosed CD}
+
+%change appropriately
+
+\begin{figure}
+	\dirtree{%
+		.1 readme.txt\DTcomment{the file with CD contents description}.
+		.1 exe\DTcomment{the directory with executables}.
+		.1 src\DTcomment{the directory of source codes}.
+		.2 wbdcm\DTcomment{implementation sources}.
+		.2 thesis\DTcomment{the directory of \LaTeX{} source codes of the thesis}.
+		.1 text\DTcomment{the thesis text directory}.
+		.2 thesis.pdf\DTcomment{the thesis text in PDF format}.
+		.2 thesis.ps\DTcomment{the thesis text in PS format}.
+	}
+\end{figure}
+
+\end{document}
+The graph databases are made explicitly with relations in mind. The nature of the graph itself gives it. Every vertex can have its connection with another one or even itself. This kind of connection is not possible with a relational database where connecting two rows means creating a relationship between two tables. With the speed of finding highly connected data, users can define indexes in relat
+
