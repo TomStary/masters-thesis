@@ -71,6 +71,15 @@
 % chapter head design (memoir-style settings)
 \chapterstyle{madsen}
 
+% change typography
+\renewcommand{\baselinestretch}{1.2}
+
+% do not indent the first line of a paragraph and add blank line after each
+\DisemulatePackage {parskip}
+\RequirePackage [parfill] {parskip}
+
+% for including pdf
+\RequirePackage{pdfpages}
 % layout of the page (memoir-style settings)
 \setlrmargins{4cm}{*}{*}\checkandfixthelayout
 
@@ -508,8 +517,11 @@ sp\^ osobom, ktor\'y nezni\v zuje hodnotu Diela (vr\'atane komer\v cn\'eho vyu\v
 \renewcommand{\counterwithin}{\@ifstar{\@csinstar}{\@csin}}
 
 	\thispagestyle{empty}
-	\if\@lang1{Sem vlo{\v z}te zad{\' a}n{\' i} Va{\v s}{\' i} pr{\' a}ce.}\else\if\@lang2{Sem vlo{\v z}te zadanie Va{\v s}ej pr{\' a}ce.}\else{Insert here your thesis' task.}\fi\fi
-
+	\ifdefined\taskfile
+        \includepdf[pages={1}]{\taskfile}
+    \else
+	    \if\@lang1{Sem vlo{\v z}te zad{\' a}n{\' i} Va{\v s}{\' i} pr{\' a}ce.}\else\if\@lang2{Sem vlo{\v z}te zadanie Va{\v s}ej pr{\' a}ce.}\else{Insert here your thesis' task.}\fi\fi
+    \fi
 	\frontmatter
 	\pagestyle{plain}
 	\cleardoublepage
