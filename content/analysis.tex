@@ -68,9 +68,21 @@ When dealing with graph databases, we have to look at two main DBMS features: st
 
 Storage is how graphs are stored in memory. If the storage is optimized for graphs, like having related nodes close together, then we talk about native graph storage. However, there are implementations using other NoSQL storages, called non-native graph storages.
 
+The second feature mentioned was processing, which refers to how graph databases process database operations. What is meant by that is how the database treats queries and how it handles storage. Native databases use Index-free adjacency for processing.
+
+\textbf{Index-free adjacency} is, in short, storing neighboring data next to each other. Now that seems too short, so in a more specific way:
+"Native graphs take data that is logically connected via arcs or relationships and hard-wire the physical RAM addresses of these items into the node."
+\cite{mccreary_neighborhood_2021} With this in mind, we can now see why are graph databases faster than other types of DBMS.
+In traditional RDBMS, looking up a row in another table means that we have to pull an index table representing this relation and then find a path to row in said table.
+In RDBMS, this leads to another problem because the database uses many indexes to keep data connected, which negatively impacts insert operations.
+
+One more thing we should go through is how the graph database handles writes. Connected data requires strict data integrity.
+Graph databases have to create or update not only nodes themselves but also relationships; otherwise, this could result in a corrupted graph, which is almost impossible to fix.
+The solution to this problem is to write fully ACID-compliant transactions, ensuring that the database will not become corrupted.
+
 \section{Neo4j}
 
-Neo4j is a graph database management system. Neo4j, Inc. is developing Neo4j, being described as an ACID-compliant by its developers and using native graph storage and processing. Because Neo4j is a NoSQL database, it uses its query language, named Cypher.
+Neo4j is a graph database management system. It is developed by Neo4j, Inc., with its origin in Sweden. Neo4j is a native graph database, and it is also ACID-compliant. Given these properties, Neo4 uses its custom query language tailored explicitly for querying over graphs, and its name is Cypher.
 
 \subsection{More about Cypher}
 
