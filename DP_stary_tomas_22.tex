@@ -1,4 +1,5 @@
 % arara: xelatex: { shell: yes }
+% arara: makeglossaries
 % arara: bibtex
 % arara: xelatex: { shell: yes }
 % arara: xelatex: { shell: yes }
@@ -31,10 +32,12 @@
 
 \definecolor{LightGray}{gray}{0.9}
 
-% % list of acronyms
-% \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
-% \iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
-% \makeglossaries
+% list of acronyms
+\usepackage[acronym,nonumberlist,toc,numberedsection=autolabel,nomain]{glossaries}
+\iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
+\makeglossaries
+
+\input{content/glossaries.tex}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % EDIT THIS
@@ -66,7 +69,9 @@
 
 \input{content/introduction.tex}
 
-\input{content/analysis.tex}
+\input{content/graph_databases.tex}
+
+\input{content/similar_solutions.tex}
 
 \bibliographystyle{iso690}
 \bibliography{mybibliographyfile}
@@ -74,12 +79,9 @@
 \setsecnumdepth{all}
 \appendix
 
-\chapter{Acronyms}
-% \printglossaries
-\begin{description}
-    \item[GUI] Graphical user interface
-    \item[XML] Extensible markup language
-\end{description}
+% \chapter{Acronyms}
+\printglossaries
+% \end{description}
 
 
 \chapter{Contents of enclosed CD}

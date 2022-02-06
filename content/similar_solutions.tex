@@ -1,0 +1,167 @@
+\chapter {Similar solutions}
+
+\section{Neo4j-\acrshort{ogm}}
+
+Neo4j company has already created an \acrshort{ogm} for their database. It supports dynamic objects and maps nodes and their relations into the domain model.
+It is written in Java, but it should be a starting point when designing a similar library in the C\#.
+
+\noindent Main features:
+\begin{itemize}
+    \item Object graph mapping of annotated node- and relationship-entities
+    \item Neo4jSession for direct interaction with Neo4j
+    \item Fast class metadata scanning
+    \item Optimized management of data loading and change tracking for minimal data transfers
+    \item Multiple transports: binary (bolt), \acrshort{http} and embedded
+    \item Persistence lifecycle events
+    \item Query result projection to data transfer objects (\acrshort{dto})
+\end{itemize}
+
+The following sections are information obtained from the official documentation of Neo4j-OGM for Java. \cite{noauthor_reference_nodate}
+
+\subsection {Neo4j drivers}
+
+There are three possible drivers to use, Bolt driver, \acrshort{http} driver, or embedded driver, which creates in-memory Neo4j instance.
+
+Using a different driver in the development or test environment will not affect the production code. These drivers are interchangeable without the need for modification in queries.
+
+\subsection {Entities}
+
+This library offers us the possibility to define and shape entities and relationships. \texttt{@NodeEntity} annotation is used to declare that a \acrfull{pojo}
+is indeed a node. This class must have one empty public constructor to allow the library to construct the objects.
+
+Fields on the entity are by default mapped to properties of the node. Fields referencing other node entities (or collections thereof) are linked with relationships.
+
+If we want to change fields name or other properties, we can use annotations like \texttt{@Property}, \texttt{@Id}, \texttt{@GeneratedValue}, or \texttt{@Relationship}. On the other hand,
+if we want to not include a field in the node, we can use annotations \texttt{@Transient}.
+
+\subsection {Relationships}
+
+Every field of an entity that references one or more other node entities is backed by relationships in the graph. These relationships are managed by Neo4j-\acrshort{ogm} automatically.
+
+If we want to specify relationship properties, like the direction of the relationship, the \texttt{@Relationship} annotation is used. The directions are either \texttt{INCOMING},
+\texttt{OUTGOING}, or \texttt{UNDIRECTED}, where the last one ensures that the path between two node entities is navigable from either side.
+
+Neo4j gives us the ability to define properties in relationships. Neo4j solves this using an entity (\acrshort{pojo}) with annotation \texttt{@RelationshipEntity}.
+
+A String attribute called type is available on the \texttt{@RelationshipEntity} annotation to control the relationship type. Like the simple strategy for labeling node entities,
+if this is not provided, then the class's name is used to derive the relationship type, although it is converted into \texttt{SNAKE\_CASE} to honor
+the naming conventions of Neo4j relationships. \cite{noauthor_reference_nodate}
+
+Inside the entity, we then define @StartNode and \texttt{@EndNode}. In referenced entities, we also define a reference to
+the related entity and use @Relationship with type same as in \texttt{@RelationshipEntity}.
+
+Below is an example of such usage:
+
+\begin{listing}[!ht]
+    \begin{minted}
+    [
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    bgcolor=LightGray,
+    linenos
+    ] {java}
+@NodeEntity
+public class Actor {
+    Long id;
+    @Relationship(type="PLAYED_IN") private Role playedIn;
+}
+
+@RelationshipEntity(type = "PLAYED_IN")
+public class Role {
+    @Id @GeneratedValue   private Long relationshipId;
+    @Property  private String title;
+    @StartNode private Actor actor;
+    @EndNode   private Movie movie;
+}
+
+@NodeEntity
+public class Movie {
+    private Long id;
+    private String title;
+}
+    \end{minted}
+    \caption{An example of entities with relationship as separate entity}
+    \label{listing:1}
+\end{listing}
+
+\subsection {Indexes}
+
+Annotations can define indexes. We already saw one of them, \texttt{@Id}, an annotation for the primary index.
+
+But primary indexes are not the only type of index we can define in our models. We can also define indexes for other
+properties using \texttt{@Index} annotation. We get an index with constraint if we use \texttt{@Index(unique=true)}.
+
+This library also supports composite indexes and node constraints with \texttt{@CompositeIndex} and \texttt{@CompositeIndex(unique = true)}, respectively.
+
+\texttt{@Required} is an existence constraint. "It is possible to annotate properties in both node entities and relationship entities. For node entities
+the label of declaring class is used to create the constraint. For relationship entities the relationship type is used - such type must
+be defined on leaf class." \cite{noauthor_reference_nodate}
+
+The \acrshort{ogm} library can handle creating and managing indexes or constraints, but as stated in the documentation, this feature should be used only for development
+and not in production. That is why this feature is, by default, turned off.
+
+
+These are the available modes:
+\begin{table}[H]
+    \begin{center}
+        \begin{tabularx}{\textwidth}{|c|p{0.83\textwidth}|}
+            \hline
+            node     & Default, nothing is done on the side of the OGM library.                                  \\
+            \hline
+            validate & This ensures that all constraints and indexes are in the database before starting up.     \\
+            \hline
+            assert   & This drops all indexes on startup and then creates only these defined by OGM annotations. \\
+            \hline
+            update   & Update indexes and constraints based on annotations.                                      \\
+            \hline
+            dump     & Dumps all indexes and constraints to a file.                                              \\
+            \hline
+        \end{tabularx}
+        \caption{Available modes for indexes and constraints}
+    \end{center}
+\end{table}
+
+\subsection{Sessions}
+To interact with mapped entities, Neo4j-OGM requires a \texttt{Session}, which \texttt{SessionFactory} provides. Besides providing \texttt{Session}, \texttt{SessionFactory}
+also setups up the object graph mapping metadata when constructed. That is then used across all \texttt{Session} objects created by \texttt{SessionFactory}.
+
+Session keeps track of mapped entities, their changes, and changes between their relationships. Tracking is then used when saving or otherwise
+working with mapped entities. When an entity is loaded by session, reloading this entity is then done from cache within the session.
+
+To keep new data and not prolong sessions too much, session lifetime can be managed in code. Too long session lifetime
+means that other users can change data, and too short a lifetime means costly save operations will be executed more often. There is a way
+to force the session's cache to clear, but it is advised against it.
+
+Cypher drives Neo4j-\acrshort{ogm} queries only. This means that only \acrfull{crud} operations are available. Documentation
+suggests using server-side operations for more complex or performant graph traversals over the graph.
+Nevertheless, Cypher should be powerful enough for most of the problems.
+
+\subsection {Persisting entities}
+
+Session allows to save, load, loadAll, and delete entities with transaction handling, and exception translation managed.
+Persistence is performed through method save. This method then looks at underlying \texttt{MappingContext} and compares data loaded
+from the database with the saved entity, creating appropriate Cypher queries to update the database based on differences.
+Calling save is necessary to propagate changes because Neo4j-\acrshort{ogm} does not automatically commit changes.
+
+The method has a second optional parameter: the depth, which can restrict how much depth the save will perform.
+The default value is \texttt{-1}, which means saving every change in node and all reachable nodes from it into the database.
+This approach is recommended because of possible inconsistencies that could happen.
+
+\subsection {Loading entities}
+
+Loading entities can be done using methods \texttt{session.loadxxx} or writing a custom Cypher query with methods \texttt{session.query} and \texttt{session.queryForObject}.
+Like the depth for saving function, the load functions also have a depth.
+
+Depth is there to determine how many depths of relatives will be loaded with query. The default behavior is to load the object's simple properties and neighbors.
+This represents loading data using depth set to value 1. Depth is mainly helpful when loading deeper than broader parts of a graph. Depth also helps developers to
+execute fewer load operations from the database.
+
+When using load methods from the session, the session uses \texttt{LoadStrategy} to generate a \texttt{RETURN} clause. The default strategy is schema loading,
+which uses entities metadata. The other is the path load strategy that uses paths from the root node. It is possible to change the strategy for a query using \texttt{Session.setStrategy}
+or globally by calling \texttt{SessionFactory.setStrategy}.
+
+\subsection{Transactions}
+
+Neo4j uses transactions, which means queries can be executed only in transaction boundaries. Neo4j-\acrshort{ogm}
+offers tools to manage transactions, but the developer does not have to use them because the session handles them independently but with the auto-commit transaction.
