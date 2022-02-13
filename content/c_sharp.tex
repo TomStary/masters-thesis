@@ -1,0 +1,25 @@
+\chapter {State of the art C\# / .NET }
+
+\section {C\#}
+C\# is a general-purpose, type-safe, object-oriented programming language, the goal of which is programmer productivity.
+To this end, the language balances simplicity, expressiveness,
+and performance. \cite{albahari_c_2019}
+
+Microsoft is developing and maintaining the C\# language. At the time of writing this thesis, the current version of the C\# is C\#10.
+
+The C\# code is statically compiled down to \acrlong{cil}. \acrshort{cil} cannot be run by itself on a machine.
+\acrshort{cil} runtime or \acrfull{clr} must be used. Using \acrfull{jit} compilation, \acrshort{clr} reads \acrshort{cil} and translates \acrshort{cil} to native
+code or sometimes called machine code. The machine's processor can then read machine code. Using \acrshort{cil} and \acrshort{clr} has benefits in running code
+cross-platform without recompiling code for different processors, at the cost of some performance. \cite{rodenburg_code_2021}
+
+\section {.NET}
+
+.NET is a framework written for C\# and other languages such as F\# and
+Visual Basic, and it is also developed by Microsoft.
+In their own words: ".NET is an open source developer
+platform, created by Microsoft, for building many different types of applications." \cite{noauthor_what_nodate-2}
+
+To compile a library or program with a .NET framework,
+developers must first download and install a .NET \acrfull{sdk}.
+This is either a standalone \acrfull{cli} tool or embedded inside an \acrshort{ide},
+for example, in Visual Studio from Microsoft.

@@ -165,3 +165,9 @@ or globally by calling \texttt{SessionFactory.setStrategy}.
 
 Neo4j uses transactions, which means queries can be executed only in transaction boundaries. Neo4j-\acrshort{ogm}
 offers tools to manage transactions, but the developer does not have to use them because the session handles them independently but with the auto-commit transaction.
+
+\section {C\#/.NET}
+
+There is no official \acrshort{ogm} library from Neo4j for C\# or ".NET."
+However, we could still inspire from EntityFramework,
+an \acrshort{orm} for multiple \acrshort{rdbms}. It supports queries using LINQ and tracking changes. \cite{wadepickett_entity_nodate}

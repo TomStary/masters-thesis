@@ -78,8 +78,7 @@ Storage is how graphs are stored in memory. If the storage is optimized for grap
 The second feature mentioned was processing, which refers to how graph databases process database operations. What is meant by that is how the database treats queries and how it handles storage. Native databases use Index-free adjacency for processing.
 \cite{chao_graph_2018}
 
-\textbf{Index-free adjacency} is, in short, storing neighboring data next to each other. Now that seems too short, so in a more specific way:
-"Native graphs take data that is logically connected via arcs or relationships and hard-wire the physical RAM addresses of these items into the node."
+\textbf{Index-free adjacency}: "Native graphs take data that is logically connected via arcs or relationships and hard-wire the physical RAM addresses of these items into the node."
 \cite{mccreary_neighborhood_2021} With this in mind, we can now see why are graph databases faster than other types of DBMS.
 In traditional RDBMS, looking up a row in another table means that we have to pull an index table representing this relation and then find a path to row in said table.
 In RDBMS, this leads to another problem because the database uses many indexes to keep data connected, which negatively impacts insert operations.
