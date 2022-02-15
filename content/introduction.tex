@@ -4,14 +4,15 @@
 
 In today's world, everything is highly connected. Graphs are an easy way to describe and visualize these relations. Graphs can help us to see connections we would otherwise catch.
 
-In most of our applications today, we do not use them to store data, mainly because first applications were being made to take paper forms into the digital world. To keep these paper forms in digital format, we use relational databases.
+Today, we do not use graphs in most of our applications to store data, mainly because the first applications were made to take paper forms into the digital world. To keep these paper forms in digital format, we use relational databases.
 
-Since then, relational databases have been the go-to for every developer when creating a new application. Using a relational database is helpful for several reasons, mainly because the development cost is lower than using new technologies, and everyone is familiar with this type of database system. However, in today's world, these benefits of the lower price of development are diminished. Numerous problems come with using relational databases,
-lengthy searches for specific highly connected data, and more complex relations are the main reason why \Gls{nosql} databases have been gaining so many tractions for the last decade.
+Since then, relational databases have been the go-to for every developer when creating a new application. Using a relational database is helpful for several reasons, mainly because the development cost is lower than using new technologies, and everyone is familiar with this type of database system. However, in today's world, these benefits of the lower development price are diminished. Numerous problems come with using relational databases,
+lengthy searches for specific highly connected data and more complex relations are the main reason why \Gls{nosql} databases have been gaining so many tractions for the last decade.
 
 The graph databases are made explicitly with relations in mind. The nature of the graph itself gives it. Every vertex can have its connection with another one or even itself. This kind of connection is not possible with a relational database where connecting two rows means creating a relationship between two tables. With the speed of finding highly connected data, users can define indexes in relational databases to help with that, but there is only so much he can do. Indexes can slow the whole system down, inserts take longer to finish, and the entire database will increase memory consumption.
 
 \subsection{What can graph databases offer us?}
+
 Graph databases are no silver bullet, and they cannot solve all our problems. When designing a new piece of software, we should always ask ourselves what the best technologies for the situation we are trying to solve is.
 
-We have discussed the problem with highly connected data and long searches, but how does the graph database solve this issue? The key here is that we will sooner or later find out that with more data comes more time spent on the same select with a growing relational database. This is due to numerous reasons, but the main one is that we are bound to make more costly joins with more extensive tables. Our search will be over the same part of the graph with a graph database no matter what happens with the rest of the database. Execution times will therefore be the same.
+We have discussed the problem with highly connected data and long searches, but how does the graph database solve this issue? The key here is that we will sooner or later find out that with more data comes more time spent on the same select with a growing relational database. This behavior is due to numerous reasons, but the main one is that we are bound to make more costly joins with more extensive tables. Our search will be over the same part of the graph with a graph database no matter what happens with the rest. Execution times will therefore be the same.

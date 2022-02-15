@@ -29,7 +29,7 @@ Using a different driver in the development or test environment will not affect 
 This library offers us the possibility to define and shape entities and relationships. \texttt{@NodeEntity} annotation is used to declare that a \acrfull{pojo}
 is indeed a node. This class must have one empty public constructor to allow the library to construct the objects.
 
-Fields on the entity are by default mapped to properties of the node. Fields referencing other node entities (or collections thereof) are linked with relationships.
+Fields on the entity are by default mapped to properties of the node. Fields referencing other node entities (or collections) are linked with relationships.
 
 If we want to change fields name or other properties, we can use annotations like \texttt{@Property}, \texttt{@Id}, \texttt{@GeneratedValue}, or \texttt{@Relationship}. On the other hand,
 if we want to not include a field in the node, we can use annotations \texttt{@Transient}.
@@ -89,7 +89,7 @@ public class Movie {
 
 Annotations can define indexes. We already saw one of them, \texttt{@Id}, an annotation for the primary index.
 
-But primary indexes are not the only type of index we can define in our models. We can also define indexes for other
+Primary indexes are not the only type of index we can define in our models. We can also define indexes for other
 properties using \texttt{@Index} annotation. We get an index with constraint if we use \texttt{@Index(unique=true)}.
 
 This library also supports composite indexes and node constraints with \texttt{@CompositeIndex} and \texttt{@CompositeIndex(unique = true)}, respectively.
@@ -133,13 +133,13 @@ To keep new data and not prolong sessions too much, session lifetime can be mana
 means that other users can change data, and too short a lifetime means costly save operations will be executed more often. There is a way
 to force the session's cache to clear, but it is advised against it.
 
-Cypher drives Neo4j-\acrshort{ogm} queries only. This means that only \acrfull{crud} operations are available. Documentation
+Neo4j-\acrshort{ogm} use Cypher queries only. What that means is that only \acrfull{crud} operations are available. Documentation
 suggests using server-side operations for more complex or performant graph traversals over the graph.
 Nevertheless, Cypher should be powerful enough for most of the problems.
 
 \subsection {Persisting entities}
 
-Session allows to save, load, loadAll, and delete entities with transaction handling, and exception translation managed.
+The session allows to save, load, loadAll, and delete entities with transaction handling and exception translation managed.
 Persistence is performed through method save. This method then looks at underlying \texttt{MappingContext} and compares data loaded
 from the database with the saved entity, creating appropriate Cypher queries to update the database based on differences.
 Calling save is necessary to propagate changes because Neo4j-\acrshort{ogm} does not automatically commit changes.
@@ -154,7 +154,7 @@ Loading entities can be done using methods \texttt{session.loadxxx} or writing a
 Like the depth for saving function, the load functions also have a depth.
 
 Depth is there to determine how many depths of relatives will be loaded with query. The default behavior is to load the object's simple properties and neighbors.
-This represents loading data using depth set to value 1. Depth is mainly helpful when loading deeper than broader parts of a graph. Depth also helps developers to
+This behavior represents loading data using depth set to value 1. Depth is mainly helpful when loading deeper than broader parts of a graph. Depth also helps developers to
 execute fewer load operations from the database.
 
 When using load methods from the session, the session uses \texttt{LoadStrategy} to generate a \texttt{RETURN} clause. The default strategy is schema loading,

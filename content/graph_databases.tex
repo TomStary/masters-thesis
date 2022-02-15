@@ -13,7 +13,7 @@ Other users can follow them to see their posts, and also they can like those pos
 \end{figure}
 
 As we can see, we need four tables and five foreign keys to describe all relations between two identified entities.
-This can lead to costly joins to answer requests resulting from relationships between entities. For example, we could ask who follows followers who liked someone's post. The query for this example could then look like this:
+This design can lead to costly joins to answer requests resulting from relationships between entities. For example, we could ask who follows followers who liked someone's post. The query for this example could then look like this:
 
 \begin{listing}[H]
     \begin{minted}
@@ -65,7 +65,7 @@ the query to get this information also follows this path.
     \caption{Cypher query for getting followers of followers who liked a post}
 \end{listing}
 
-As promised, the query should not be hard to understand. This is just a small example of how powerful graph databases can be.
+As promised, the query should not be hard to understand. It is just a quick example of how powerful graph databases can be.
 
 This example was inspired by a blog post from Graham Cox, Introduction to Graph Databases. \cite{cox_introduction_2017}
 
@@ -73,18 +73,18 @@ This example was inspired by a blog post from Graham Cox, Introduction to Graph 
 
 When dealing with graph databases, we have to look at two main DBMS features: storage and processing.
 
-Storage is how graphs are stored in memory. If the storage is optimized for graphs, like having related nodes close together, then we talk about native graph storage. However, there are implementations using other NoSQL storages, called non-native graph storages.
+Storage is how graphs are stored in memory. If the storage is optimized for graphs, like having related nodes close together, then we talk about native graph storage when implementation uses other NoSQL storages, then they are called non-native graph storages.
 
 The second feature mentioned was processing, which refers to how graph databases process database operations. What is meant by that is how the database treats queries and how it handles storage. Native databases use Index-free adjacency for processing.
 \cite{chao_graph_2018}
 
 \textbf{Index-free adjacency}: "Native graphs take data that is logically connected via arcs or relationships and hard-wire the physical RAM addresses of these items into the node."
-\cite{mccreary_neighborhood_2021} With this in mind, we can now see why are graph databases faster than other types of DBMS.
+\cite{mccreary_neighborhood_2021} With this in mind, we can now see why graph databases are faster than other types of DBMS.
 In traditional RDBMS, looking up a row in another table means that we have to pull an index table representing this relation and then find a path to row in said table.
-In RDBMS, this leads to another problem because the database uses many indexes to keep data connected, which negatively impacts insert operations.
+This behavior leads to another problem in RDBMS because the database uses many indexes to keep data connected, which negatively impacts insert operations.
 
 One more thing we should go through is how the graph database handles writes. Connected data requires strict data integrity.
-Graph databases have to create or update not only nodes themselves but also relationships; otherwise, this could result in a corrupted graph, which is almost impossible to fix.
+Graph databases have to create or update nodes themselves and relationships; otherwise, this could result in a corrupted graph, which is almost impossible to fix.
 The solution to this problem is to write fully \acrshort{acid}-compliant transactions, ensuring that the database will not become corrupted.
 \cite{chao_graph_2018}
 
@@ -103,13 +103,13 @@ Its ease of use derives from the fact that it is in accord with how we intuitive
 
 \subsection{Nodes}
 
-To depict nodes in Cypher, we surround the node with parentheses, e.g. \texttt{(node)}. Parentheses were chosen because they look like circles,
+To depict nodes in Cypher, we surround the node with parentheses, e.g., \texttt{(node)}. Parentheses were chosen because they look like circles,
 a standard visual representation of nodes in the graph. \cite{noauthor_getting_nodate}
 
 If we need to refer to the node, we can give it a variable like \texttt{(u)} for a user or \texttt{(p)} for a post.
 In real-world queries, full names of variables should be used to understand the query better.
 
-With variables, we mentioned the possibility to give a variable name to user or to post, but how can we distinguish two nodes from one to the other.
+With variables, we mentioned the possibility to give a variable name to the nodes, but how can we distinguish two nodes from one to the other.
 We can do this by assigning labels to each node. Labels are like tags, which specify certain entities in the graph. If we look back to our example of users and posts,
 we can already identify the two labels we would use: \texttt{(p:Post)} and \texttt{(u:User)}.
 
@@ -119,12 +119,11 @@ Specifying labels also has another benefit. When not using labels in a query, th
 \subsection{Relationship representation}
 
 Relationships between nodes are there to utilize the power of graph databases. They are represented in Cypher using an arrow \texttt{-->}
-or \texttt{<--} between two nodes. Additional information, such as by which relationship type are two nodes connected and any properties pertaining
-to the relationship, can be placed in square brackets inside the arrow \texttt{((p:Post)-[:AUTHOR]->(u:User))}. \cite{noauthor_getting_nodate}
+or \texttt{<--} between two nodes. Additional information, such as by which relationship type are two nodes connected and any properties of the relationship, can be placed in square brackets inside the arrow \texttt{((p:Post)-[:AUTHOR]->(u:User))}. \cite{noauthor_getting_nodate}
 
 The direction of the relationship must be present only while creating the said relationship.
 During the traversal of the graph, it is possible to omit the direction by using two dashes (like so: \texttt{--}).
-This is done to make queries more flexible and not force users to know in which directions are relationships stored in the database.
+This syntax can make queries more flexible and not force users to know in which directions are relationships stored in the database.
 
 Like with nodes, variables can be used to refer to relationships. If we do not need to reference the relationship later,
 we can leave any specification and use an anonymous relationship using two dashes.
@@ -143,11 +142,11 @@ Below is two examples of this usage, one for node and the other for relationship
 
 \subsection{Querying with Cypher}
 
-Like most of the other programming languages, Cipher has few words reserved for specific actions, which are called keywords. \cite{noauthor_querying_nodate} First, let us look at the two most common keywords:
+Like most other programming languages, Cipher has few words reserved for specific actions, which are called keywords. \cite{noauthor_querying_nodate} First, let us look at the two most common keywords:
 \begin{itemize}
     \item {\texttt{MATCH}: This keyword is what searches for an existing node, relationship, label, property, or pattern in the database. \texttt{MATCH} does work similarly to the \texttt{SELECT} in \acrshort{sql}.}
     \item {\texttt{RETURN}: The \texttt{RETURN} keyword defines what values or results we want to retrieve from the database.
-          As such, it is used mainly in search queries as it is not required to be used during write procedures.
+          It is used mainly in search queries as it is not required to be used during write procedures.
           \texttt{RETURN} does utilize the node and relationship variables. If we want to return any results from defined \texttt{MATCH},
           we must specify which nodes, relationships, properties, or patterns we want to return.}
 \end{itemize}
@@ -227,7 +226,7 @@ Cons:
 \end{itemize}
 
 Using the term \acrshort{orm} with relation to graph databases is not correct. The proper term would be \acrshort{ogm} (object-graph mapper),
-but there are a few reasons why we are using \acrshort{orm} instead of \acrshort{ogm} in the name of this thesis. But make no mistake,
+but there are a few reasons why we are using \acrshort{orm} instead of \acrshort{ogm} in the name of this thesis. However, please make no mistake,
 when discussing \acrshort{orm} involving graph databases, it is, in fact, \acrshort{ogm}.
 The main reason is simple: \acrshort{orm} has been around for more than a decade, and developers are familiar with the concept and its challenges.
 
