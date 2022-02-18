@@ -1,0 +1,51 @@
+\chapter {Solution analysis}
+
+We now know the graph database, its use, and its fundamental properties. Then we moved on programing language and framework in which this library will be created.
+Furthermore, we looked at similar solutions to give us an idea of the problems we need to solve.
+
+This chapter will analyze problems deeply and propose a solution to them.
+
+\section{Objects to nodes and relationships}
+
+One of the first things we should analyze is mapping nodes and relationships into objects in C\#. This problem has already been
+solved in Java, where they use annotations. Annotations are also available C\# and are widely used.
+
+Some of the annotations are already present in .NET. For example, there is already an annotation that can be used to identify a primary
+key called \texttt{KeyAttribute}. However, we will have to define most of them ourselves. For this, we should use a correct namespace in our package
+that should be the same as the namespace of \texttt{KeyAttribute}, which is \texttt{System.ComponentModel.DataAnnotations}.
+
+Let us now go over all attributes we need to specify based on our analysis of existing solutions and Neo4j itself.
+
+\subsection{\texttt{NodeAttribute}}
+
+\texttt{NodeAttribute} defines a \acrshort{poco} to be a node in a graph database. We can then extrapolate node variables, labels,
+relationships, and other metadata inside this object. Retrieving this information will be done with additional annotations and by reflection.
+
+\todo{Go through the process of scanning maybe, this might be better to describe more generally in a separate section and maybe also in the implementation chapter?}
+
+\subsection{\texttt{StartNodeAttribute} and \texttt{EndNodeAttribute}}
+
+\texttt{StartNodeAttribute} is one of two annotations that we will use to describe a relationship between two nodes. We need to use two of them to describe a
+relationship's direction. The second one is \texttt{EndNodeAttribute}. With both of these annotations, we will be able to tell the relationship's direction.
+
+These annotations will be used in each node definition, or if the relationship does contain variables, they will be used in the relationship object.
+
+\subsection{\texttt{RelationshipEntityAttribute} and \texttt{RelationshipAttribute}}
+
+\texttt{RelationshipEntityAttribute} marks a \acrshort{poco} to be a relationship. This attribute is used to describe a
+relationship with variables, which, as we know from the chapter about graph databases, is in Neo4j possible. When defined,
+the object must contain \texttt{StartNodeAttribute} and also \texttt{EndNodeAttribute}. This constraint should be controlled on
+the application's startup, as it could lead to an error when building a query when not fulfilled.
+
+The\texttt{RelationshipAttribute} is then used in node entity to define a property that references an object with the \texttt{RelationshipEntityAttribute} defined.
+
+\subsection{Other annotations}
+
+We already described that some annotations are already present in .NET, but they do not cover everything we might need from our library.
+For example, there is no annotation for ignoring a property in the object during mapping to the database. Let us see the list below of other annotations, with a short description.
+
+\todo{Add all annotations}
+
+\section{Query builder}
+
+\section{Transactions}
