@@ -51,10 +51,22 @@ we encounter a new requirement to create another shape instead of a square. Each
 If we continued to create objects inside the application's code, we would have to make a condition for each constructor invocation for shape.
 Adding unnecessary complexity and this solution would be prone to errors.
 
-Instead, we create a common interface for shapes. For this interface, we create a base factory (abstract class) with logic shared between final shapes.
+Instead, we create a common interface for shapes. We create a base factory (abstract class) with logic shared between final shapes for this interface.
 Concrete factory is then used to define which product (shape in our case) is returned to the application's code.
 
 The client's code using this pattern does not see a difference between the concrete product returned by various concrete subclasses.
 It only sees the abstract interface that we declared.
 
 \subsection{Builder pattern}
+
+In most applications, we encounter complex objects that require step-by-step initialization of many fields and nested objects leading to large and complex constructors which are hard to navigate through. These constructors then have many parameters and can be scattered all over the application.
+
+To illustrate this problem in the best way possible, imagine a room, a room can be a study room, dining room, kitchen, living room. Each room requires furniture and decoration, and some of it can be shared between rooms.
+
+The first solution might be using subclasses, representing each room with different parameters to cover all combinations. Eventually, we will end up with a considerable number of subclasses. Any new parameter will require growing this hierarchy even more.
+
+The builder pattern solves this issue by extracting each object's construction code from its class and moving it to separate objects called builders. Object construction is organized into a set of steps ("paintWalls", "buildTable", etc.). These steps need to be executed to create an object, resulting in the final product.
+
+We can create several different builder classes that implement the same build steps with different internal implementations, giving us the ability to change the representation of the product. In our case, this could mean changing the material from which the furniture is made.
+
+We can further extract a series of calls to the builder steps into a separate class called director. The director class defines the order in which to execute the building steps. \cite{noauthor_factory_nodate}
