@@ -1,0 +1,60 @@
+\chapter{Architectures \& design patterns}
+
+In this thesis, we will encounter a few architectures and design patterns. Before we do that, we should know what each of
+them stands for. This chapter will go through the most notable patterns and describe them.
+
+"Design Patterns are categorized mainly into three categories: Creational Design Pattern, Structural Design Pattern, and Behavioral
+Design Pattern. These differ based on their level of detail, complexity, and scale of applicability to the entire system being designed." \cite{noauthor_classification_nodate}
+
+\section{Creational design patterns}
+
+As the name would suggest, Creational design patterns use abstraction for the instantiation process.
+Using them makes a system independent of how its objects are created, composed, and represented. We can divide this pattern between
+a class creational pattern, which uses inheritance to vary the class that's instantiated, and an object creational pattern, which will
+delegate instantiation to another object. \cite{gamma_design_1995}
+
+The main reason to use any of the creational design patterns is to help create an
+abstraction layer for creating concrete instances of classes in a system.
+This need comes with any system that is growing. Class inheritance may be enough at the start of the development,
+but with a growing system comes a need to shift from class inheritance to delegation of instantiation to another object.
+This is the time when creational design patterns come into play. These patterns give us much more flexibility
+in what gets created, who creates it, how it gets created, and when.
+
+\subsection{Abstract factory}
+
+For an illustration, we will look at creating instances of different shapes.
+We have got three shapes: triangle, square, pentagon. Each shape can be in different
+variants like filled or with gradient background. The problem is how to abstract creating
+each shape and its variant to match other objects of the same family. We also want to keep our
+existing code intact, so we do not have to change our code repeatedly. \cite{gamma_design_1995}
+
+To solve this problem with the abstract factory, we first declare interfaces for each distinct product of
+the product family (e.g., triangle, square, pentagon). The next move is to declare the abstract factory, which is an interface with
+a list of methods for all products that are part of the product family (for example, "createTriangle," "createSquare," "createPentagon").
+These methods must return abstract types, which we declared at the beginning.
+
+We create a separate factory class for product variants based on the abstract factory interface we declared for each of the variants.
+We can call this implementation of the factory a concrete factory, which returns concrete products. In the client's code, we then accept the abstract
+factory interface, giving us the ability to change the implementation of the concrete factory without the need to change the client's code.
+
+One question is left unanswered, who creates the concrete factory instances? Usually, the application creates factories during
+the initialization process; sometimes, these factories are part of the dependency injection container, but we will discuss this matter in another part of this chapter.
+
+\subsection{Factory method}
+
+Factory method provides an interface for creating objects in a superclass but allows subclasses to alter the type of created objects.
+\cite{noauthor_factory_nodate} Using this solution, we will not use direct calls to the constructor in the application's code, but instead,
+we will always call a defined method in our factory for a given class.
+
+Imagine that we have an application that creates squares instances inside its code. As the application grows,
+we encounter a new requirement to create another shape instead of a square. Each shape will have common methods.
+If we continued to create objects inside the application's code, we would have to make a condition for each constructor invocation for shape.
+Adding unnecessary complexity and this solution would be prone to errors.
+
+Instead, we create a common interface for shapes. For this interface, we create a base factory (abstract class) with logic shared between final shapes.
+Concrete factory is then used to define which product (shape in our case) is returned to the application's code.
+
+The client's code using this pattern does not see a difference between the concrete product returned by various concrete subclasses.
+It only sees the abstract interface that we declared.
+
+\subsection{Builder pattern}
