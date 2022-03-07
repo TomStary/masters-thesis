@@ -59,7 +59,7 @@ It only sees the abstract interface that we declared.
 
 \subsection{Builder pattern}
 
-In most applications, we encounter complex objects that require step-by-step initialization of many fields and nested objects leading to large and complex constructors which are hard to navigate through. These constructors then have many parameters and can be scattered all over the application.
+In most applications, we encounter complex objects that require step-by-step initialization of many fields and nested objects leading to large and complex constructors which are hard to navigate through. These constructors then have many parameters and can be scattered throughout the application.
 
 To illustrate this problem in the best way possible, imagine a room, a room can be a study room, dining room, kitchen, living room. Each room requires furniture and decoration, and some of it can be shared between rooms.
 
@@ -70,3 +70,33 @@ The builder pattern solves this issue by extracting each object's construction c
 We can create several different builder classes that implement the same build steps with different internal implementations, giving us the ability to change the representation of the product. In our case, this could mean changing the material from which the furniture is made.
 
 We can further extract a series of calls to the builder steps into a separate class called director. The director class defines the order in which to execute the building steps. \cite{noauthor_factory_nodate}
+
+\subsection{Singleton}
+
+Singleton pattern is used to ensure that a given class has only one instance during runtime. Using a singleton pattern solves two problems.
+
+Ensures that a class has just a single instance. The most common reason someone would want to control how many instances are created is to control access to shared resources, like databases.
+
+The second problem is providing a global access point to an instance of a class. This does sound like a global variable, but the singleton pattern solves the main problem with global variables, which is the ability to overwrite them accidentally.
+
+The implementation of the singleton pattern should follow this implementation:
+\begin{itemize}
+    \item {In the class add a private static field that stores the singleton instance.}
+    \item {Declare public static method to retrieve singleton instance, if an instance is not created yet, create it.}
+    \item {Make constructor of the class private. The static method from the previous point should be the only one able to create a new instance of this class.}
+\end{itemize}
+
+\section{Structural patterns}
+
+"Structural patterns are concerned with how classes and objects are composed to form larger structures. Patterns from this family help us compose interfaces or implementations. \cite{gamma_design_1995}
+
+We will not go through all structural patterns like we did not go through all creational patterns in the previous section. If a reader wants to go through them all, an excellent online source is at https://refactoring.guru.
+
+\subsection {Reflection}
+
+The reflection pattern is used to access the class and its methods and fields. That means we can access the class and its methods and fields without knowing its implementation.
+This has to be supported by the programming language itself. For example, C\# supports reflection and is widely used in some popular libraries.
+
+Reflection works by scanning the program's implementations and creating metadata about the classes and methods. This metadata is stored in the program's memory and made accessible at
+runtime.
+

@@ -34,18 +34,47 @@ These annotations will be used in each node definition, or if the relationship d
 
 \texttt{RelationshipEntityAttribute} marks a \acrshort{poco} to be a relationship. This attribute is used to describe a
 relationship with variables, which, as we know from the chapter about graph databases, is in Neo4j possible. When defined,
-the object must contain \texttt{StartNodeAttribute} and also \texttt{EndNodeAttribute}. This constraint should be controlled on
-the application's startup, as it could lead to an error when building a query when not fulfilled.
-
-The\texttt{RelationshipAttribute} is then used in node entity to define a property that references an object with the \texttt{RelationshipEntityAttribute} defined.
+both sides must have the \texttt{RelationshipAttribute} specified.
 
 \subsection{Other annotations}
 
-We already described that some annotations are already present in .NET, but they do not cover everything we might need from our library.
-For example, there is no annotation for ignoring a property in the object during mapping to the database. Let us see the list below of other annotations, with a short description.
+We already described that some annotations are already present in .NET, but they do not cover everything we might need from our library. For example, there is no annotation for ignoring a property in the object during mapping to the database. Let us see the list below of other annotations, with a short description.
 
 \todo{Add all annotations}
 
-\section{Query builder}
+\subsection{Schema registration on startup}
+
+\todo{go through of how the startup should check models}
+
+\section{Session/Context}
+
+From our analysis of Neo4j-OGM or EntityFrameworkCore in the previous chapter, we know they both use session or context to keep track of entities. These objects, as will ours, serve as the primary handlers of communication between our code and database.
+
+The first thing we should solve is handling a connection to the database. Both libraries solve this issue differently, which is understandable because Neo4j-OGM connects only to the Neo4j database, but EntityFrameworkCore uses adapters to connect to different databases. For our library, we choose the first solution. Like Neo4j-OGM, we will define driver configuration during the initialization of our session.
+
+Because Neo4j has already created a driver for .NET, we do not have to write it ourselves from scratch. We will use factory pattern \todo{describe factory pattern} to create our session, just like Neo4js implementation does it in their Java implementation. We will also make an extension for IServiceProvider to register our session for DIC, which is part of .NET.
+
+\section{Metadata}
+
+Metadata is information about the graph structure, which is then used to map the data from the database to objects in the program. There are multiple ways to obtain and construct metadata. Using knowledge from the previous chapter about similar solutions, we can now compare the two implementations and propose a best-suited solution for our library.
+
+\subsection{First approach by Neo4j-OGM}
+
+The first approach is from Neo4j-OGM, which builds metadata on "Session's" initialization or is cached in a factory that creates "Session." By studying an open-source code on Github, we can get an idea of how are metadata obtained using reflection. Because Neo4j-OGM is written in Java, we can only take some inspiration as some parts are solved differently in C\#.
+
+Neo4j-OGM builds metadata scanning defined packages and constructing a graph scheme. This scheme does contain information about nodes, their attributes and labels, and relationships and their directions. Various methods then expose these data to the session itself.
+
+\subsection{Second approach by EntityFrameworkCore}
+
+EntityFrameworkCore does use the same approach as Neo4-OGM but with some caveats. The main difference is the complexity of the solution. EntityFrameworkCore is far more robust when it comes to creating database metadata. Given this complexity and that EFCore is used for relational databases, we can shift our focus to Neo4j's solution because it is closer to what we are trying to solve.
+
+\subsection{Final solution proposal}
+
+The graphs metadata must be created at the start of the application and saved in the factory for later use.
+If we want to use reflection effectively, we must minimize scanned assemblies to avoid processing too many objects.
+We can do this either by defining an assembly in which models are located or defining all objects used as nodes.
+
+The initialization begins with the scanning of defined assemblies. During this scanning process, all classes with NodeEntity attribute are processed and wrapped inside
+a INode type. This type is then used to create a graph scheme.
 
 \section{Transactions}
