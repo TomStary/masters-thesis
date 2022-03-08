@@ -1,80 +1,47 @@
 \chapter {Solution analysis}
 
-We now know the graph database, its use, and its fundamental properties. Then we moved on programing language and framework in which this library will be created.
-Furthermore, we looked at similar solutions to give us an idea of the problems we need to solve.
+We should now have all information we need to propose our solution for OGM using C\# language. Before we start to analyze individual pieces of the library needed for its proper function, let us propose and discuss a list of requirements we need.
 
-This chapter will analyze problems deeply and propose a solution to them.
+The solution should be able to:
+\begin{itemize}
+    \item {connect to a database}
+    \item {map objects into graph structure}
+    \item {map LINQ query into Cypher query}
+    \item {execute a command in a database}
+    \item {retrieve a result from the database}
+    \item {map the result from the database into objects}
+\end{itemize}
 
-\section{Objects to nodes and relationships}
+With these minimal requirements set, we can now go through them, analyze them, and propose individual solutions to them.
 
-One of the first things we should analyze is mapping nodes and relationships into objects in C\#. This problem has already been
-solved in Java, where they use annotations. Annotations are also available C\# and are widely used.
+\section{Connect to a database}
 
-Some of the annotations are already present in .NET. For example, there is already an annotation that can be used to identify a primary
-key called \texttt{KeyAttribute}. However, we will have to define most of them ourselves. For this, we should use a correct namespace in our package
-that should be the same as the namespace of \texttt{KeyAttribute}, which is \texttt{System.ComponentModel.DataAnnotations}.
+Neo4j company has created a client for ".NET" that supports both bolt and neo4j URI schemes. \cite{noauthor_client_nodate} This driver is a standalone NuGet package that is publicly accessible and licensed under Apache 2.0 license. This means we can use this driver in our library as a dependency.
 
-Let us now go over all attributes we need to specify based on our analysis of existing solutions and Neo4j itself.
+The application should handle the driver's lifecycle. During startup, the application should create an instance of the driver and then correctly destroy this instance on exit. The lifecycle will be managed by our library or by using DIC.
 
-\subsection{\texttt{NodeAttribute}}
+Before we create an instance of the driver, we need to pass the correct configuration for the driver. Configuration not only for the driver must be created and maintained. ".NET" does contain a configuration manager used with the linkage to dependency injection.
 
-\texttt{NodeAttribute} defines a \acrshort{poco} to be a node in a graph database. We can then extrapolate node variables, labels,
-relationships, and other metadata inside this object. Retrieving this information will be done with additional annotations and by reflection.
+\subsection{Conclusion}
 
-\todo{Go through the process of scanning maybe, this might be better to describe more generally in a separate section and maybe also in the implementation chapter?}
+We will use Neo4j's official driver for connection, but we need to encapsulate it into our library. This means we need to create a configuration structure and configuration builder, which will then be used to connect to the database.
 
-\subsection{\texttt{StartNodeAttribute} and \texttt{EndNodeAttribute}}
+\section {Map objects into graph structure}
 
-\texttt{StartNodeAttribute} is one of two annotations that we will use to describe a relationship between two nodes. We need to use two of them to describe a
-relationship's direction. The second one is \texttt{EndNodeAttribute}. With both of these annotations, we will be able to tell the relationship's direction.
+If we want to translate queries from the object paradigm into Cypher correctly, we need to know the graph structure described in our domain.
 
-These annotations will be used in each node definition, or if the relationship does contain variables, they will be used in the relationship object.
+What we are trying to do is create metadata. To build metadata, we first need information, which assemblies contain models representing nodes and relationships in a graph. A developer must declare these assemblies as it is necessary to limit the scope that will be scanned using reflection.
 
-\subsection{\texttt{RelationshipEntityAttribute} and \texttt{RelationshipAttribute}}
+Solutions that we analyzed in the previous chapter are internally working very similarly. Both are scanning assemblies or packages on initialization (Java uses packages vs. C\# uses assemblies/namespaces), and we will borrow some of the features from these solutions into ours. Developers of our library will need to define a set of assemblies. During the initialization of our library, we will scan these assemblies and create a metadata object with information about the user-defined graph.
 
-\texttt{RelationshipEntityAttribute} marks a \acrshort{poco} to be a relationship. This attribute is used to describe a
-relationship with variables, which, as we know from the chapter about graph databases, is in Neo4j possible. When defined,
-both sides must have the \texttt{RelationshipAttribute} specified.
+\subsection {Annotations}
 
-\subsection{Other annotations}
+To create a metadata object, we need to identify and process nodes and relationships. We need to have a way for developers to describe each node and its relationship with all properties they would want to define, and which we also need to build the metadata object correctly.
 
-We already described that some annotations are already present in .NET, but they do not cover everything we might need from our library. For example, there is no annotation for ignoring a property in the object during mapping to the database. Let us see the list below of other annotations, with a short description.
+We already have a solution to this problem, and Neo4j also uses it to solve the same issue. We will use annotations using attributes. Using these annotations, we can describe nodes and their relationships.
 
-\todo{Add all annotations}
+We will look for these annotations during initialization using reflection, which is well supported by C\# and ".NET." With annotation, we can describe the graph and create the metadata object.
 
-\subsection{Schema registration on startup}
+\section {Map LINQ query into Cypher query}
 
-\todo{go through of how the startup should check models}
-
-\section{Session/Context}
-
-From our analysis of Neo4j-OGM or EntityFrameworkCore in the previous chapter, we know they both use session or context to keep track of entities. These objects, as will ours, serve as the primary handlers of communication between our code and database.
-
-The first thing we should solve is handling a connection to the database. Both libraries solve this issue differently, which is understandable because Neo4j-OGM connects only to the Neo4j database, but EntityFrameworkCore uses adapters to connect to different databases. For our library, we choose the first solution. Like Neo4j-OGM, we will define driver configuration during the initialization of our session.
-
-Because Neo4j has already created a driver for .NET, we do not have to write it ourselves from scratch. We will use factory pattern \todo{describe factory pattern} to create our session, just like Neo4js implementation does it in their Java implementation. We will also make an extension for IServiceProvider to register our session for DIC, which is part of .NET.
-
-\section{Metadata}
-
-Metadata is information about the graph structure, which is then used to map the data from the database to objects in the program. There are multiple ways to obtain and construct metadata. Using knowledge from the previous chapter about similar solutions, we can now compare the two implementations and propose a best-suited solution for our library.
-
-\subsection{First approach by Neo4j-OGM}
-
-The first approach is from Neo4j-OGM, which builds metadata on "Session's" initialization or is cached in a factory that creates "Session." By studying an open-source code on Github, we can get an idea of how are metadata obtained using reflection. Because Neo4j-OGM is written in Java, we can only take some inspiration as some parts are solved differently in C\#.
-
-Neo4j-OGM builds metadata scanning defined packages and constructing a graph scheme. This scheme does contain information about nodes, their attributes and labels, and relationships and their directions. Various methods then expose these data to the session itself.
-
-\subsection{Second approach by EntityFrameworkCore}
-
-EntityFrameworkCore does use the same approach as Neo4-OGM but with some caveats. The main difference is the complexity of the solution. EntityFrameworkCore is far more robust when it comes to creating database metadata. Given this complexity and that EFCore is used for relational databases, we can shift our focus to Neo4j's solution because it is closer to what we are trying to solve.
-
-\subsection{Final solution proposal}
-
-The graphs metadata must be created at the start of the application and saved in the factory for later use.
-If we want to use reflection effectively, we must minimize scanned assemblies to avoid processing too many objects.
-We can do this either by defining an assembly in which models are located or defining all objects used as nodes.
-
-The initialization begins with the scanning of defined assemblies. During this scanning process, all classes with NodeEntity attribute are processed and wrapped inside
-a INode type. This type is then used to create a graph scheme.
-
-\section{Transactions}
+We can connect to a database, and we also have mapped the whole graph and created metadata to navigate through schema. Now, we need the ability to translate a query written in LINQ to a query in Cypher.
