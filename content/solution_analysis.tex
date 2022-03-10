@@ -53,6 +53,9 @@ Before we would start mapping LINQ queries into Cypher queries, we need to solve
 changes in models to apply them to the database, in this work however, we will not implement change tracker as it is out of scope of this work. Nevertheless, we still
 need an ability to add, update or delete nodes and relationships. These operations will be done using Session like it is done in Neo4j-OGM.
 
-\subsection{Query builder}
+\subsection{Update generator}
 
-To execute any operation on the database, we need a Cypher query. To create this query we will use query builder which will build query from blocks of statements.
+Borrowing from Entity Framework, we will create a class that will generate Cypher queries for updating nodes and relationships.
+Like in Entity Framework, UpdateCypherGenerator will be responsible for generating queries that changes data in the database.
+
+
