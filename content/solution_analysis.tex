@@ -1,4 +1,4 @@
-\chapter {Solution analysis}
+\chapter {Design an ORM library}
 
 We should now have all information we need to propose our solution for OGM using C\# language. Before we start to analyze individual pieces of the library needed for its proper function, let us propose and discuss a list of requirements we need.
 
@@ -45,3 +45,14 @@ We will look for these annotations during initialization using reflection, which
 \section {Map LINQ query into Cypher query}
 
 We can connect to a database, and we also have mapped the whole graph and created metadata to navigate through schema. Now, we need the ability to translate a query written in LINQ to a query in Cypher.
+
+If we want to mimick the way Entity Framework Core translates a LINQ query to a SQL query we need to use similar approach as they did. We need to define our own encapsulation for nodes
+and relationships with properties, if we want them to be translated correctly. This encapsulation will be similar to DbSet found in Entity Framework.
+
+Before we would start mapping LINQ queries into Cypher queries, we need to solve an issue with data manipulation. Entity Framework uses both DbSets and DbContext abilities to track
+changes in models to apply them to the database, in this work however, we will not implement change tracker as it is out of scope of this work. Nevertheless, we still
+need an ability to add, update or delete nodes and relationships. These operations will be done using Session like it is done in Neo4j-OGM.
+
+\subsection{Query builder}
+
+To execute any operation on the database, we need a Cypher query. To create this query we will use query builder which will build query from blocks of statements.

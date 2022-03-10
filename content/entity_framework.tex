@@ -1,0 +1,31 @@
+\chapter{Review EntityFrameworkCore}
+
+There is no official \acrshort{ogm} library from Neo4j for C\# or ".NET."
+However, we could still inspire from Entity Framework,
+an \acrshort{orm} for multiple \acrshort{rdbms}. It supports queries using LINQ and tracking changes. \cite{wadepickett_entity_nodate}
+
+\section {Entity Framework Core}
+
+When we are talking about Entity Framework we are talking about their latest version of this framework, Entity Framework Core or EFCore as it known in the community.
+This version was realeased for .NET Core 1.0 which was first Microsoft version of .NET purposly build for multiplaform use.
+
+To be able to use Entity Framework, developers must add another dependency to their projects. This dependecy is for Entity Framework and its called provider, which is used
+to provide connection and also translation capabilities for Entity Framework to work properly over specific database.
+
+\subsection {Entity Framework Core}
+
+If we want to know how does Entity Framework translate LINQ queries to SQL queries, we need to look at implementation of any provider that is publicly available.
+In perfect world, we would use a documentation for how to do it, but as of toady there is no current documentation.
+
+To study we will choose a provider for Postgresql database. There are two reasons for why this provider, the first one is author's experience with this providers and the second one
+is because this provider is done by third party.
+
+Full code for this provider is available at github server at this url: https://github.com/npgsql/efcore.pg.
+
+\subsection {Postgresql provider}
+
+Studying both provider and Entity Framework Core, we get an idea of how it works. EF Core is creating a base functionality, like providing interfaces and abstract classes to scan
+the expression tree for each query, it also provides interfaces for translators which are used to translate the query to SQL. The provider is then implementing these interfaces and abstract classes.
+
+Expression tree is, as we already know, created from separate expressions, these expression accepts visitors. Visitors are then used to visit each expression in the expression tree.
+This expression tree is processed in \texttt{QueryCompilationContext}.

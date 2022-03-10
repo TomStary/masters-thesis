@@ -1,5 +1,7 @@
 \chapter{Architectures \& design patterns}
 
+\todo{make it shorter and use it in the C\# chapter}
+
 In this thesis, we will encounter a few architectures and design patterns. Before we do that, we should know what each of
 them stands for. This chapter will go through the most notable patterns and describe them.
 
@@ -92,11 +94,9 @@ The implementation of the singleton pattern should follow this implementation:
 
 We will not go through all structural patterns like we did not go through all creational patterns in the previous section. If a reader wants to go through them all, an excellent online source is at https://refactoring.guru.
 
+\section{Behavioral patterns}
+
+\todo {visitor pattern}
+
 \subsection {Reflection}
-
-The reflection pattern is used to access the class and its methods and fields. That means we can access the class and its methods and fields without knowing its implementation.
-This has to be supported by the programming language itself. For example, C\# supports reflection and is widely used in some popular libraries.
-
-Reflection works by scanning the program's implementations and creating metadata about the classes and methods. This metadata is stored in the program's memory and made accessible at
-runtime.
 

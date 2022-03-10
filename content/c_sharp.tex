@@ -26,4 +26,62 @@ for example, in Visual Studio from Microsoft.
 
 \section{Reflection}
 
-\todo{Reflection, also think about splitting architectures into separate chapter}
+The reflection pattern is used to access the class and its methods and fields. We can access the class and its methods and fields without knowing its implementation.
+This feature has to be supported by the programming language itself. For example, C\# supports reflection and is widely used in many popular libraries.
+
+Reflection works by scanning the program's implementations and creating metadata about the classes and methods.
+This metadata is stored in the program's memory and made accessible at runtime.
+
+For example, the following class:
+
+\begin{listing}[H]
+    \begin{minted}[
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1.2,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {csharp}
+ public class Person
+ {
+ [Key]
+ public string Name { get; set; }
+ public int Age { get; set; }
+ }
+\end{minted}
+\end{listing}
+
+If we would want to know if the class does contain a field with KeyAttribute annotation, we could use this next code to get the MemberInfo instance:
+
+\begin{listing}[H]
+    \begin{minted}[
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1.2,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {csharp}
+ public bool HasKeyAttribute(Type type)
+ {
+ var members = type.GetMembers();
+ return members.Any(member => member.GetCustomAttributes().OfType<EndNodeAttribute>().Any());
+ }
+ \end{minted}
+\end{listing}
+
+We would use this code in cases where we do not know how an object is implemented.
+
+\section {LINQ}
+
+In the previous section, we used a method called \texttt{Any} to check if a collection contains an element. This method is part of a library in .NET called LINQ.
+LINQ stands for Language Integrated Query, and it is a library that provides a set of methods that can be used to query objects.
+We can filter, order, group, and transform data using this library.
+
+LINQ is internally working as an expression tree, each command as an expression. The expression tree is immutable and evaluated at runtime, and developers
+can use the tree to analyze and convert it to \acrshort{sql}, for example. To extend expression tree capabilities, LINQ provides an abstract class \texttt{ExpressionVisitor},
+called for each expression combined with extension for \texttt{IQueryable<T>} and other tools.
+
+
+
