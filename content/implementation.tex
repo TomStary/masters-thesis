@@ -1,0 +1,38 @@
+\chapter {Proof-of-concept implementation}
+
+For implementation we will use the latest version of the C\# and .NET at the time of writing this thesis, which are C\# 10.0 and .NET 6.0.
+Other used tools are Visual Studio Code with multiple plugins like Copilot and C\# extension. Github is used as VCS and code can be
+found at this URL https://github.com/TomStary/dotnet-neo4j-ogm or in appendix of this thesis.
+
+To create a new project, we will use the following command: \texttt{dotnet new classlib} with parameters for the name of the project and others.
+We also want to separate tests from source code of library, so we employ a file structure like this:
+
+\begin{figure}[H]
+    \dirtree{%
+        .1 dotnet-neo4j-ogm.
+        .2 src.
+        .3 {Neo4j.OGM}.
+        .2 tests.
+        .3 {Neo4j.OGM.}.
+        .2 {.gitignore} .
+        .2 {Neo4j.OGM.sln}.
+    }
+    \caption{File structure}
+\end{figure}
+
+With file structure prepared we can begin our implementation. During development of this
+library we want to use \acrfull{tdd}. We will not go deep into this approach in this chapter
+as it will have its own chapter, but keep in mind, that during development, \acrshort{tdd} was used as it is a good way to write and test libraries.
+
+\section {Session}
+
+Session is the most significant part of this library. It is the place where we will contact database to store and retrieve data.
+For session to work properly, we need to have a few things:
+
+\begin{itemize}
+    \item connection to the database
+    \item domain metadata
+\end{itemize}
+
+Both connection to database and domain metadata can be aquired from the constructor of the session or can be prepared elsewhere.
+
