@@ -1,10 +1,15 @@
 \chapter {State of the art of graph databases}
 
-Graph databases store information in graphs, very similarly as relation databases store information in tables and have relations between columns in tables,
-graph databases store information in nodes and even on the edges, or as we should call them, relations. \cite{morgante_what_2021}
+Before we start with this chapter, here is a definition of what graph databases are:
+"Graph databases store information in graphs, very similarly as relation databases store information in tables and have relations between columns in tables,
+graph databases store information in nodes and even on the edges, or as we should call them, relations." \cite{morgante_what_2021}
 
-Let us show the power of graph databases in a real-world example. Social networks dominate today's internet content, and everyone wants to be connected with his or her friends and relatives. In one of the social networks, we have people who can post their thoughts or opinions.
-Other users can follow them to see their posts, and also they can like those posts. We can identify two entities with relations between them. In a relational database, it would look like this.
+To better show the power of graph databases, we will show it on a real-world example compared to relational databases.
+Social networks dominate today's internet content, and everyone wants to be connected with his or her friends and relatives.
+In one of the social networks, we have people who can post their thoughts or opinions.
+Other users can follow them to see their posts, and also they can like those posts.
+We can identify two entities with relations between them.
+In a relational database, it would look like this.
 
 \begin{figure}[H]
     \centering
@@ -17,14 +22,14 @@ This design can lead to costly joins to answer requests resulting from relations
 
 \begin{listing}[H]
     \begin{minted}
-    [
-    frame=lines,
-    framesep=2mm,
-    baselinestretch=1.2,
-    bgcolor=LightGray,
-    linenos,
-    breaklines
-    ] {sql}
+ [
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1.2,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {sql}
 SELECT followers_of_followers_data.*
 FROM post
 JOIN follower_likes fl ON post.id = fl.id_post
@@ -33,11 +38,12 @@ JOIN follower_follows followers_of_followers ON followers_liked.id = followers_o
 JOIN follower followers_of_followers_data ON followers_of_followers.id_follower = followers_of_followers_data.id
 WHERE post.id = :post_id
 ORDER BY followers_of_followers_data.name;
-    \end{minted}
+ \end{minted}
     \caption{SQL query for getting followers of followers who liked a post}
 \end{listing}
 
-From the query, we can see that it is barely readable and complex. However, the main problem is performance. The join operations will take more time even for the same request, with more data stored in tables. Let us now compare the same problem solved using a graph database.
+From the query, we can see that it is barely readable and complex. However, the main problem is performance. The join operations will take more time even for the same request, with more data stored in tables.
+Now, we compare the same problem solved using a graph database.
 
 \begin{figure}[H]
     \centering
@@ -52,16 +58,16 @@ the query to get this information also follows this path.
 
 \begin{listing}[H]
     \begin{minted}
-    [
-    frame=lines,
-    framesep=2mm,
-    baselinestretch=1.2,
-    bgcolor=LightGray,
-    linenos,
-    breaklines
-    ] {cypher}
-    MATCH (:Post {id: {post_id}})-[:LIKES]->(:User)-[:FOLLOWS]->(followers:User) RETURN (followers);
-    \end{minted}
+ [
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1.2,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {cypher}
+ MATCH (:Post {id: {post_id}})-[:LIKES]->(:User)-[:FOLLOWS]->(followers:User) RETURN (followers);
+ \end{minted}
     \caption{Cypher query for getting followers of followers who liked a post}
 \end{listing}
 
@@ -69,11 +75,11 @@ As promised, the query should not be hard to understand. It is just a quick exam
 
 This example was inspired by a blog post from Graham Cox, Introduction to Graph Databases. \cite{cox_introduction_2017}
 
-\subsection {Native vs. Non-native graph databases}
+\section {Native vs. Non-native graph databases}
 
 When dealing with graph databases, we have to look at two main DBMS features: storage and processing.
 
-Storage is how graphs are stored in memory. If the storage is optimized for graphs, like having related nodes close together, then we talk about native graph storage when implementation uses other NoSQL storages, then they are called non-native graph storages.
+Storage is how graphs are stored in memory. If the storage is optimized for graphs, like having related nodes close together, we talk about native graph storage when implementation uses other NoSQL storage. Then they are called non-native graph storage.
 
 The second feature mentioned was processing, which refers to how graph databases process database operations. What is meant by that is how the database treats queries and how it handles storage. Native databases use Index-free adjacency for processing.
 \cite{chao_graph_2018}
@@ -96,7 +102,7 @@ and its name is Cypher. \cite{noauthor_neo4j_nodate-2}
 
 \section{Cypher}
 
-Cypher is a query language created by Neo4j initially for their graph database. Nowadays, it is possible to use Cypher on other graph databases, using "openCypher." \cite{noauthor_resources_nodate}
+\textit{Cypher} is a query language created by Neo4j initially for their graph database. Nowadays, it is possible to use Cypher on other graph databases, using "openCypher." \cite{noauthor_resources_nodate}
 
 Its philosophy is to be easily read and understood by developers, database professionals, and business stakeholders.
 Its ease of use derives from the fact that it is in accord with how we intuitively describe graphs using diagrams. \cite{robinson_graph_2015}
@@ -142,7 +148,8 @@ Below is two examples of this usage, one for node and the other for relationship
 
 \subsection{Querying with Cypher}
 
-Cypher has few words reserved for specific actions called keywords like most other programming languages. \cite{noauthor_querying_nodate} First, let us look at the two most common keywords:
+Cypher has few words reserved for specific actions called keywords like most other programming languages. \cite{noauthor_querying_nodate}
+First, look at the two most common keywords:
 \begin{itemize}
     \item {\texttt{MATCH}: This keyword is what searches for an existing node, relationship, label, property, or pattern in the database. \texttt{MATCH} does work similarly to the \texttt{SELECT} in \acrshort{sql}.}
     \item {\texttt{RETURN}: The \texttt{RETURN} keyword defines what values or results we want to retrieve from the database.
@@ -160,17 +167,17 @@ Using \texttt{CREATE}, we can create nodes, relationships, and also patterns. Be
 
 \begin{listing}[H]
     \begin{minted}
-    [
-    frame=lines,
-    framesep=2mm,
-    baselinestretch=1.2,
-    bgcolor=LightGray,
-    linenos,
-    breaklines
-    ] {cypher}
-    CREATE (u:User {nickname: "mr. Incognito"})
-    RETURN u
-    \end{minted}
+ [
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1.2,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {cypher}
+ CREATE (u:User {nickname: "mr. Incognito"})
+ RETURN u
+ \end{minted}
     \caption{Create a new user with nickname}
 \end{listing}
 
@@ -181,18 +188,18 @@ If we used \texttt{CREATE} right away, we would introduce duplicities of both no
 
 \begin{listing}[H]
     \begin{minted}
-    [
-    frame=lines,
-    framesep=2mm,
-    baselinestretch=1.2,
-    bgcolor=LightGray,
-    linenos,
-    breaklines
-    ] {cypher}
-    MATCH (u:User {nickname: "mr. Incognito"})
-    MATCH (p:Post {title: "Hello, world!"})
-    CREATE (u)<-[:AUTHOR]-(p)
-    \end{minted}
+ [
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1.2,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {cypher}
+ MATCH (u:User {nickname: "mr. Incognito"})
+ MATCH (p:Post {title: "Hello, world!"})
+ CREATE (u)<-[:AUTHOR]-(p)
+ \end{minted}
     \caption{Create a new relationship between two nodes}
 \end{listing}
 
@@ -229,3 +236,13 @@ Using the term \acrshort{orm} with relation to graph databases is not correct. T
 but there are a few reasons why we are using \acrshort{orm} instead of \acrshort{ogm} in the name of this thesis. However, please make no mistake,
 when discussing \acrshort{orm} involving graph databases, it is, in fact, \acrshort{ogm}.
 The main reason is simple: \acrshort{orm} has been around for more than a decade, and developers are familiar with the concept and its challenges.
+
+\section{Conclusion}
+
+In this chapter, we introduced graph databases compared to relational databases. We compared the queries of both types of databases and their differences.
+We also studied the differences between native and non-native databases.
+
+The rest of this chapter was focused on Neo4j and Cypher language, where we introduced the basics of this language, like how are relationships and nodes defined,
+and base keywords used in Cypher.
+
+In the end, we also adequately introduced the concept of \acrshort{orm} and its relation to \acrshort{ogm}.

@@ -1,4 +1,9 @@
-\chapter {State of the art C\# / .NET }
+\chapter {State of the art EntityFramework and .NET}
+
+If anyone wants to create \acrshort{orm} or \acrshort{ogm} for .NET in C\#, they should go through some principles that are used in
+EntityFramework and .NET. This chapter will go through some of these principles with insight into the technologies used.
+
+We will start with studying C\# and then .NET and LINQ, part of .NET. Then we will go through EntityFramework itself.
 
 \section {C\#}
 C\# is a general-purpose, type-safe, object-oriented programming language, the goal of which is programmer productivity.
@@ -24,7 +29,7 @@ developers must first download and install a .NET \acrfull{sdk}.
 .NET \acrfull{sdk} is either a standalone \acrfull{cli} tool or embedded inside an \acrshort{ide},
 for example, in Visual Studio from Microsoft.
 
-\section{Reflection}
+\subsection{Reflection}
 
 The reflection pattern is used to access the class and its methods and fields. We can access the class and its methods and fields without knowing its implementation.
 This feature has to be supported by the programming language itself. For example, C\# supports reflection and is widely used in many popular libraries.
@@ -73,7 +78,7 @@ If we would want to know if the class does contain a field with KeyAttribute ann
 
 We would use this code in cases where we do not know how an object is implemented.
 
-\section {LINQ}
+\subsection {LINQ}
 
 In the previous section, we used a method called \texttt{Any} to check if a collection contains an element. This method is part of a library in .NET called LINQ.
 LINQ stands for Language Integrated Query, and it is a library that provides a set of methods that can be used to query objects.
@@ -84,4 +89,71 @@ can use the tree to analyze and convert it to \acrshort{sql}, for example. To ex
 called for each expression combined with extension for \texttt{IQueryable<T>} and other tools.
 
 
+With LINQ, we can write queries in a more readable way. These queries can then be translated to \acrshort{sql} queries, for example.
+This feature is used in Entity Framework.
+
+\section {Entity Framework Core}
+
+With knowledge from previous sections of this chapter, we can now study Entity Framework.
+
+When we are talking about Entity Framework, we are talking about their latest version of this framework, Entity Framework Core or EFCore, as it is known in the community.
+This version was released for .NET Core 1.0, the first Microsoft version of .NET purposely built for multiplatform use.
+
+To use Entity Framework, developers must add another dependency to their projects. This dependency is for Entity Framework and its called provider, which is used
+to provide connection and translation capabilities for Entity Framework to work correctly over a specific database.
+
+If we want to know how Entity Framework translates LINQ queries to SQL queries, we need to look at implementing any publicly available provider.
+In a perfect world, we would use the documentation for how to do it, but there is no current documentation at the time of writing.
+
+To study, we will choose a provider for the Postgresql database. There are two reasons for why this provider, the first one is the author's experience with these providers and the second one
+is because a third party created this provider.
+
+Complete code for this provider is available at GitHub server at this URL: \url{https://github.com/npgsql/efcore.pg}.
+
+\subsection {Postgresql provider}
+
+Studying both provider and Entity Framework Core, we get an idea of how it works. EF Core is creating a base functionality, like providing interfaces and abstract classes to scan
+the expression tree for each query. It also provides interfaces for translators to translate the query to SQL. The provider is then implementing these interfaces and abstract classes.
+
+As we already know, an expression tree is created from individual expressions. Each expression accepts visitors, which are used to generate \acrshort{sql}.
+This expression tree is processed in
+\linebreak\texttt{QueryCompilationContext}.
+
+\subsection {\texttt{DbSet}}
+
+An inseparable part of the Entity Framework Core is the \texttt{DbSet}. This class is used to query data from the database.
+The Entity Framework creates it, and it is an implementation of \texttt{IQueryable<T>} interface. This interface is the backbone of LINQ.
+
+With this abstract class, we can not only create queries to the database but also add or update entities to the change tracker.
+Change tracker is then used for saving operation, where it is checked what was changed were made and then they are saved to the database using \texttt{DbContext.SaveChanges} method
+or its asynchronous version \texttt{DbContext.SaveChangesAsync}.
+
+\texttt{DbSet} implements methods in both synchronous and asynchronous versions. The main benefit of asynchronous versions is that they are not blocking the thread. They are using \texttt{Task} to run the code in the background. This is done by using \texttt{async} keyword.
+
+One key aspect of queries not mentioned yet is that queries are generated using extension methods. Inside Entity Framework are declared extension methods that
+extends \texttt{IQueryable<T>} interface and \text{Expression} abstract class. These extension methods are responsible for generating predicates which are then translated to the \acrshort{sql}.
+To show these extensions, we will look at the example of implementation of \texttt{DbSet<T>.FindAsync} method.
+
+\subsection{\texttt{FindAsync}}
+
+Before going into the implementation, we need to define what this method does. It is used to find an entity by its primary key or keys.
+If the key is not found, then it returns null, or to be more precise, it returns the default value of the object using keyword \texttt{default}.
+
+\texttt{FindAsync} method does take 1 to n parameters of the type of object, and these parameters are key parameters of the entity we want to find, the entity,
+which we want to find is given by the type used when declaring the \texttt{DbSet<T>} instance in \texttt{DbContext} either by declaring public property inside \texttt{DbContext}
+or by using \texttt{DbContext.Set<T>} method.
+
+Inside \texttt{FindAsync} is then called a method defined by \texttt{IEntityFinder} interface with name \texttt{FindAsync}.
+The actual implementation is therefore hidden in the implementation of this implementation, which we can find inside the Entity Framework Core repository, which is available
+on the GitHub server.
+
+An instance of \texttt{EntityFinder} that implements \texttt{IEntityFinder} is created internally and also contains the cache for already tracked and mapped entities.
+This cache is then checked to see if the entity we are trying to find is not already there. If it was the case, then the cached value is returned. Otherwise, a new query is created
+using \texttt{FirstOrDefaultAsync} method which is \texttt{IQueryable<T>} extension method defined in the Entity Framework Core.
+
+Queries are generally created by creating a custom expression tree, which is then translated to \acrshort{sql}.
+
+\section {Conclusion}
+
+\todo[inline]{TBD}
 

@@ -1,8 +1,9 @@
 \chapter {Proof-of-concept implementation}
 
-For implementation we will use the latest version of the C\# and .NET at the time of writing this thesis, which are C\# 10.0 and .NET 6.0.
-Other used tools are Visual Studio Code with multiple plugins like Copilot and C\# extension. Github is used as VCS and code can be
-found at this URL https://github.com/TomStary/dotnet-neo4j-ogm or in appendix of this thesis.
+\todo[inline]{introduction}
+
+When writing this thesis, we will use the latest version of the C\# and .NET for implementation: C \# 10.0 and .NET 6.0.
+The main tools used are Visual Studio Code with multiple plugins like Copilot and C\# extension. Github is used as VCS. Code is available at this URL https://github.com/TomStary/dotnet-neo4j-ogm or in the appendix of this thesis.
 
 To create a new project, we will use the following command: \texttt{dotnet new classlib} with parameters for the name of the project and others.
 We also want to separate tests from source code of library, so we employ a file structure like this:
@@ -20,19 +21,22 @@ We also want to separate tests from source code of library, so we employ a file 
     \caption{File structure}
 \end{figure}
 
-With file structure prepared we can begin our implementation. During development of this
-library we want to use \acrfull{tdd}. We will not go deep into this approach in this chapter
-as it will have its own chapter, but keep in mind, that during development, \acrshort{tdd} was used as it is a good way to write and test libraries.
+With the file structure prepared, we can begin our implementation. During the development of this
+library, we want to use \acrfull{tdd}. We will not go deep into this approach in this chapter
+as it will be described in the next chapter, but keep in mind that during development, \acrshort{tdd} was used as it is an excellent way to write and test libraries.
 
 \section {Session}
 
-Session is the most significant part of this library. It is the place where we will contact database to store and retrieve data.
-For session to work properly, we need to have a few things:
+The session is the most significant part of this library. It is where we will contact the database to store and retrieve data.
+For the session to work properly, we need to have a few things:
 
 \begin{itemize}
     \item connection to the database
     \item domain metadata
 \end{itemize}
 
-Both connection to database and domain metadata can be aquired from the constructor of the session or can be prepared elsewhere.
+Both the connection to a database and domain metadata can be acquired from the session's constructor or can be prepared elsewhere.
+
+\todo[inline]{conclusion}
+
 

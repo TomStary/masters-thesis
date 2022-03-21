@@ -1,6 +1,7 @@
-\chapter {Design an ORM library}
+\chapter {Design of OGM library}
 
-We should now have all information we need to propose our solution for OGM using C\# language. Before we start to analyze individual pieces of the library needed for its proper function, let us propose and discuss a list of requirements we need.
+We should now have all information we need to propose our solution for OGM using C\# language.
+Before we start to analyze individual pieces of the library needed for its proper function, we need a list of requirements.
 
 The solution should be able to:
 \begin{itemize}
@@ -16,11 +17,11 @@ With these minimal requirements set, we can now go through them, analyze them, a
 
 \section{Connect to a database}
 
-Neo4j company has created a client for ".NET" that supports both bolt and neo4j URI schemes. \cite{noauthor_client_nodate} This driver is a standalone NuGet package that is publicly accessible and licensed under Apache 2.0 license. This means we can use this driver in our library as a dependency.
+Neo4j company has created a client for .NET that supports both bolt and neo4j URI schemes. \cite{noauthor_client_nodate} This driver is a standalone NuGet package that is publicly accessible and licensed under Apache 2.0 license. This means we can use this driver in our library as a dependency.
 
 The application should handle the driver's lifecycle. During startup, the application should create an instance of the driver and then correctly destroy this instance on exit. The lifecycle will be managed by our library or by using DIC.
 
-Before we create an instance of the driver, we need to pass the correct configuration for the driver. Configuration not only for the driver must be created and maintained. ".NET" does contain a configuration manager used with the linkage to dependency injection.
+Before we create an instance of the driver, we need to pass the correct configuration for the driver. Configuration for the driver and session must be created and maintained. .NET does contain a configuration manager used with the linkage to dependency injection.
 
 \subsection{Conclusion}
 
@@ -41,23 +42,31 @@ To create a metadata object, we need to identify and process nodes and relations
 
 We already have a solution to this problem, and Neo4j also uses it to solve the same issue. We will use annotations using attributes. Using these annotations, we can describe nodes and their relationships.
 
-We will look for these annotations during initialization using reflection, which is well supported by C\# and ".NET." With annotation, we can describe the graph and create the metadata object.
+We will look for these annotations during initialization using reflection, which is well supported by C\# and .NET. With annotation, we can describe the graph and create the metadata object.
+
+\subsection {Entity mapper}
+
+Entity mapper should be able to map entities into statements that could then be translated into Cypher query. It should be able to use generated metadata correctly
+to map both nodes and relationships.
+
+For this purpose, we will define a interface \texttt{IEntityMapper}. This interface will contain
+this list of public methods:
+
+\begin{itemize}
+    \item {\texttt{Map}: this method map an entity to a \texttt{ICompilerContext}}
+    \item {\texttt{CompilerContext}: this method returns a current instance of \texttt{ICompilerContext}}
+\end{itemize}
+
+\texttt{ICompilerContext} is another interface defining a context for statements. It should provide a way to add and manage builders to the context.
+These builders will be used to build statements.
 
 \section {Map LINQ query into Cypher query}
 
 We can connect to a database, and we also have mapped the whole graph and created metadata to navigate through schema. Now, we need the ability to translate a query written in LINQ to a query in Cypher.
 
-If we want to mimic how Entity Framework Core translates a LINQ query to SQL, we need to use a similar approach. If we want them to be translated correctly, we need to define our own encapsulation for nodes
-and relationships with properties. This encapsulation will be similar to DbSet found in Entity Framework.
+We need to use a similar approach to mimic how Entity Framework Core translates a LINQ query to SQL. If we want them to be translated correctly,
+we need to define our encapsulation for nodes and relationships with properties. This encapsulation will be similar to DbSet found in Entity Framework.
 
-Before mapping LINQ queries into Cypher queries, we need to solve data manipulation issues. Entity Framework uses DbSets and DbContext abilities to track
-models' changes and apply them to the database. In this work, however, we will not implement a change tracker as it is out of the scope of this work. Nevertheless, we still
-need the ability to add, update or delete nodes and relationships. These operations will be done using Session like it is done in Neo4j-OGM.
+Our \texttt{DbSet} class will also implements interface \texttt{IQueryable<T>}. In our case, the DbSet class will be created by \texttt{ISession}.
 
-\subsection{Saving entities}
-
-Looking at implementations in Neo4j-OGM, we will need to define similar structure. We will copy structure of this library with some limitations and also
-change a way how are some parts working to be in line with C\#'s best practices.
-
-Session has a method for saving an entity or list of entities with posibility to define depth of the saved graph. Actual saving operations (create, set and delete) are performed
-in \texttt{SessionSaveDelete} class.
+\todo[inline]{conclusion}
