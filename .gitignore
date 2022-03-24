@@ -278,3 +278,5 @@ TSWLatexianTemp*
 *.ist
 
 DP_stary_tomas_22.pdf
+
+.DS_Store

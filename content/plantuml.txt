@@ -1,0 +1,55 @@
+@startuml
+!theme vibrant
+package "Neo4j.OGM" {
+[Session]
+}
+
+package "Neo4j.Driver" {
+[Driver]
+}
+
+Component "Database" as DB <<Neo4j>>
+
+[Driver] ..> HTTP : use
+[Driver] ..> BOLT : use
+
+HTTP -up- DB
+BOLT -up- DB
+
+[Session] --> [Driver]
+@enduml
+
+
+@startuml
+!theme vibrant
+interface IEntityMapper {
+    Map(entity:object, depth:int) : ICompilerContext
+    CompilerContext() : ICompilerContext
+}
+class EntityGraphMapper {
+    + EntityGraphMapper(metadata:MetaData, mappingContext:MappingContext)
+    + Map(entity:object, depth:int) : ICompilerContext
+    + CompilerContext() : ICompilerContext
+}
+IEntityMapper <|-- EntityGraphMapper
+
+interface ICompilerContext {
+    Register(entity:object) : void
+    RegisterNewObject(id:long, entity:object) : void
+    Unregister(entity:object) : void
+    Visited(entity:object, horizon:int) : bool
+    VisitedNode(entity:object) : NodeBuilder?
+    VisitedRelationshipEntity(id:long) : bool
+}
+class CompilerContext {
+    + CompilerContext(compiler:MultiStatementCypherCompiler)
+    + VisitedNode(entity:object) : NodeBuilder?
+    + Visited(entity:object, horizon:int) : bool
+    + VisitedRelationshipEntity(id:long) : bool
+    + RegisterNewObject(id:long, entity:object) : void
+    + Register(entity:object) : void
+    + Unregister(entity:object) : void
+}
+
+ICompilerContext <|-- CompilerContext
+@enduml

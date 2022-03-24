@@ -23,6 +23,14 @@ The application should handle the driver's lifecycle. During startup, the applic
 
 Before we create an instance of the driver, we need to pass the correct configuration for the driver. Configuration for the driver and session must be created and maintained. .NET does contain a configuration manager used with the linkage to dependency injection.
 
+Here is visualisation of connections between components:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{content/components.png}
+    \caption{Components diagram}
+\end{figure}
+
 \subsection{Conclusion}
 
 We will use Neo4j's official driver for connection, but we need to encapsulate it into our library. This means we need to create a configuration structure and configuration builder, which will then be used to connect to the database.
@@ -57,8 +65,16 @@ this list of public methods:
     \item {\texttt{CompilerContext}: this method returns a current instance of \texttt{ICompilerContext}}
 \end{itemize}
 
-\texttt{ICompilerContext} is another interface defining a context for statements. It should provide a way to add and manage builders to the context.
-These builders will be used to build statements.
+In the picture \ref{fig:IEntityMapperClassDiagram} is class diagram with interfaces and also classes that implements these interfaces.
+The interface \texttt{ICompilerContext} contains methods for controling context of mapped nodes and relationships. These methods
+are used during mapping an entity in \texttt{IEntityMapper.Map} method to map an entity for Cypher query.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{content/entitymapper.png}
+    \caption{\texttt{IEntityMapper} and \texttt{ICompilerContext} class diagrams}
+    \label{fig:IEntityMapperClassDiagram}
+\end{figure}
 
 \section {Map LINQ query into Cypher query}
 
@@ -69,4 +85,6 @@ we need to define our encapsulation for nodes and relationships with properties.
 
 Our \texttt{DbSet} class will also implements interface \texttt{IQueryable<T>}. In our case, the DbSet class will be created by \texttt{ISession}.
 
-\todo[inline]{conclusion}
+
+
+\todo[inline]{Summary}
