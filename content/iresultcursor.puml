@@ -1,0 +1,18 @@
+@startuml IResultCursor
+!theme vibrant
+
+interface IResultCursor {
+    IRecord Current
+    Task<string[]> KeysAsync()
+    Task<IRecord> PeekAsync()
+    Task<bool> FetchAsync()
+}
+
+interface IRecord {
+    object this[int index]
+    object this[string key]
+    IReadOnlyDictionary<string, object> Values
+    IReadOnlyList<string> Keys
+}
+
+@enduml

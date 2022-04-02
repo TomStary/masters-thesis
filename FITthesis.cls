@@ -61,6 +61,7 @@
 \AtEndDocument{\ifdefined\there@is@a@table\label{tab:was:used:in:doc}\fi}
 \DeclareRobustCommand{\listoftablescond}{\@ifundefined{r@tab:was:used:in:doc}{}{\listoftables*}}
 
+\RequirePackage{todonotes}
 
 % heading numbering (memoir-style settings)
 \setsecnumdepth{subsubsection}
@@ -544,6 +545,9 @@ sp\^ osobom, ktor\'y nezni\v zuje hodnotu Diela (vr\'atane komer\v cn\'eho vyu\v
 
 	\cleardoublepage
 	\listoftablescond
+
+	\cleardoublepage
+	\listoftodos
 
 	\pagestyle{ruled}
 	\mainmatter

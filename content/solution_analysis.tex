@@ -33,7 +33,8 @@ Here is visualisation of connections between components:
 
 \subsection{Conclusion}
 
-We will use Neo4j's official driver for connection, but we need to encapsulate it into our library. This means we need to create a configuration structure and configuration builder, which will then be used to connect to the database.
+We will use Neo4j's official driver for connection, but we need to encapsulate it into our library.
+We need to create a configuration structure and configuration builder, which will then be used to create a connection to the database.
 
 \section {Map objects into graph structure}
 
@@ -41,7 +42,7 @@ If we want to translate queries from the object paradigm into Cypher correctly, 
 
 What we are trying to do is create metadata. To build metadata, we first need information, which assemblies contain models representing nodes and relationships in a graph. A developer must declare these assemblies as it is necessary to limit the scope that will be scanned using reflection.
 
-Solutions that we analyzed in the previous chapter are internally working very similarly. Both are scanning assemblies or packages on initialization (Java uses packages vs. C\# uses assemblies/namespaces), and we will borrow some of the features from these solutions into ours.
+The solutions we analyzed in the previous chapter are internally working very similarly. Both are scanning assemblies or packages on initialization (Java uses packages vs. C\# uses assemblies/namespaces), and we will borrow some of the features from these solutions into ours.
 Developers of our library will need to define a set of assemblies. During the initialization of our library, we will scan these assemblies and create a metadata object with information about the user-defined graph.
 
 \subsection {Annotations}
@@ -66,7 +67,7 @@ this list of public methods:
 \end{itemize}
 
 In the picture \ref{fig:IEntityMapperClassDiagram} is class diagram with interfaces and also classes that implements these interfaces.
-The interface \texttt{ICompilerContext} contains methods for controling context of mapped nodes and relationships. These methods
+The interface \texttt{ICompilerContext} contains methods for controlling context of mapped nodes and relationships. These methods
 are used during mapping an entity in \texttt{IEntityMapper.Map} method to map an entity for Cypher query.
 
 \begin{figure}[H]
@@ -78,13 +79,90 @@ are used during mapping an entity in \texttt{IEntityMapper.Map} method to map an
 
 \section {Map LINQ query into Cypher query}
 
-We can connect to a database, and we also have mapped the whole graph and created metadata to navigate through schema. Now, we need the ability to translate a query written in LINQ to a query in Cypher.
+Mapping a LINQ query to a Cypher query is a bit more complicated. As we already know, any LINQ query is an expression tree, which is used to process an IQueryable object.
+We cannot map these expressions to a Cypher query because we do not know how to map the expression tree to a Cypher query. But there is a way to transform the expression tree
+into a Cypher query. We know this because Entity Framework does the same thing but for SQL queries.
 
-We need to use a similar approach to mimic how Entity Framework Core translates a LINQ query to SQL. If we want them to be translated correctly,
-we need to define our encapsulation for nodes and relationships with properties. This encapsulation will be similar to DbSet found in Entity Framework.
+\subsection{\texttt{IQueryable} extension}
 
-Our \texttt{DbSet} class will also implements interface \texttt{IQueryable<T>}. In our case, the DbSet class will be created by \texttt{ISession}.
+If we want to communicate with the database, the \texttt{IQueryable} instance must have a correct provider.
+This provider must be able to transform the expression tree into a Cypher query and also execute the query asynchronously. We are going to extend \texttt{IQueryProvider} interface
+with \texttt{IAsyncQueryProvider} interface which declares \texttt{IAsyncQueryProvider.ExecuteAsync<T>} method.
 
+To set a correct provider we are going to define new class that implements \texttt{IQueryable<T>} interface called \texttt{DbSet<T>}.
+This name of the class is the same as it is in Entity Framework. Besides implementing \texttt{IQueryable<T>} interface \texttt{DbSet<T>} class also implements
+\texttt{IAsyncEnumerable<T>} interface. This interface is used to create an asynchronous enumerable object.
 
+Inside constructor of \texttt{DbSet<T>} class we are going to set the correct provider as well as set an instance of \texttt{ISession}.
+Because we need an instance of \texttt{ISession} we are going to declare a method inside this interface called\linebreak
+\texttt{ISession.Set<TEntity>} which will create a new instance
+of \texttt{DbSet<T>}.
 
-\todo[inline]{Summary}
+Because we are communicating with a database using asynchronous operations, we need to create extension methods for \texttt{DbSet<T>} which are also asynchronous.
+For example, LINQ has method called \texttt{FirstOrDefault} which returns first element of \texttt{IQueryable<T>} or default value of type T. We are going to create
+an extension of \texttt{IQueryable<T>} with method \texttt{FirstOrDefaultAsync}. This extension method will be used to transform the expression tree into a Cypher query.
+
+Inside this extension method, we will call providers\linebreak
+\code{IAsyncQueryProvider.ExecuteAsync<T>} method. This is our entry point, from which we will start a translation
+of the expression tree into a Cypher query.
+
+For better visualisation, here is class diagram of query provider and \texttt{DbSet<T>} class \ref{fig:queryprovider}:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{content/QueryProvider.png}
+    \caption{\texttt{IAsyncQueryProvider} and \texttt{DbSet<TEnity>} with extension class diagram}
+    \label{fig:queryprovider}
+\end{figure}
+
+\subsection{Query compilation}
+
+We are now inside a \texttt{QueryCompiler} class, which is just facade for creating a \texttt{Func<QueryContext, TResult>} which is then executed.
+This object represents a function which is both a query executor and also object enumerator, its result is what is returned to the \texttt{DbSet<T>} class.
+It will be by another class \texttt{QueryCompilationContext} which is a context object for whole query compilation.
+
+The compilation itself will be done using visitors. Each expression in the expression tree can be visited using derived class from \texttt{ExpressionVisitor} class.
+The visitors will be used to create a \texttt{Func<QueryContext, TResult>} object. From the name, one could think we are talking about visitors as in visitor pattern and
+it is true, LINQ does implement visitor pattern for visiting expressions. More on this pattern can be found on this website \url{https://refactoring.guru/design-patterns/visitor}.
+
+\section{Execute a command and retrieve the result}
+
+To execute query, we will be using Neo4js official driver for .NET. The result of any query
+is returned using \texttt{IResultCursor} interface. This interface is somewhat similar to asynchronous
+enumerator, but it does not implement the \texttt{IAsyncEnumerable<T>} interface. The \texttt{IResultCursor} interface
+declares methods as show on the \ref{fig:iresinterface} picture. We will have to adapt our code, to use this interface.
+We are going to use these methods inside a proper implementation of \texttt{IAsyncEnumerable<T>}
+interface.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{content/IResultCursor.png}
+    \caption{\texttt{IResultCursor} and \texttt{IRecord} interfaces}
+    \label{fig:iresinterface}
+\end{figure}
+
+\section{Map the result of the query to an object}
+
+Mapping result into an object is our last step. We already know from \ref{fig:iresinterface} class diagram,
+that we can access an \texttt{IRecord} interface using \texttt{IResultCursor.Current} property.
+This interface represnts a single result of the query, which is defined in Cypher using \texttt{RETURN} clause.
+
+Our mapper needs to not only read the result but also correctly choose the right key from the values. IRecord is not a representation of a single node
+or relationship, but it is a representation of the \texttt{RETURN} clause, meaning that it contains all the values of the \texttt{RETURN} clause.
+Mapper needs to know which key contains which entity and or value.
+
+We can solve this issue, by creating an extension method which will extend an \texttt{IRecord} interface and accept a \texttt{string} parameter defining an alias of value.
+This method will return either a value or an entity.
+
+\section{Summary}
+
+In this chapter, we designed a solution for an \acrshort{ogm} library in .NET with LINQ to Cypher translation.
+We started with defining six key requirements that our library must solve and then went through each one of them and
+proposed a solution for them.
+
+We defined how are we going to handle a creating a connection to the database using Neo4js official driver for .NET, then we moved on
+the problem of mapping objects into graph stucture using annotations and reflection. We also proposed a solution for mapping LINQ queries to
+Cypher queries. At the end of this chapter we went through the process of executing and mapping Cypher query and its result back into objects.
+
+With this design we should have all what we need to successfully implement \acrshort{ogm} library for .NET with LINQ to Cypher translation.
+

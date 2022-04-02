@@ -20,7 +20,7 @@ It is written in Java, but it should be a starting point when designing a simila
     \item Query result projection to data transfer objects (\acrshort{dto})
 \end{itemize}
 
-The following sections are information obtained from the official documentation of Neo4j-OGM for Java. \cite{noauthor_reference_nodate}
+The following sections are information obtained from the official documentation of Neo4j-\acrshort{ogm} for Java. \cite{noauthor_reference_nodate}
 
 \subsection {Neo4j drivers}
 
@@ -52,7 +52,7 @@ if this is not provided, then the class's name is used to derive the relationshi
 the naming conventions of Neo4j relationships. \cite{noauthor_reference_nodate}
 
 Inside the entity, we then define @StartNode and \texttt{@EndNode}. In referenced entities, we also define a reference to
-the related entity and use @Relationship with type same as in \texttt{@RelationshipEntity}.
+the related entity and use \texttt{@Relationship} with type same as in \texttt{@RelationshipEntity}.
 
 Below is an example of such usage:
 
@@ -127,7 +127,7 @@ These are the available modes:
 \end{table}
 
 \subsection{Sessions}
-To interact with mapped entities, Neo4j-OGM requires a \texttt{Session}, which \texttt{SessionFactory} provides. Besides providing \texttt{Session}, \texttt{SessionFactory}
+To interact with mapped entities, Neo4j-\acrshort{ogm} requires a \texttt{Session}, which \texttt{SessionFactory} provides. Besides providing \texttt{Session}, \texttt{SessionFactory}
 also setups up the object graph mapping metadata when constructed. That is then used across all \texttt{Session} objects created by \texttt{SessionFactory}.
 
 Session keeps track of mapped entities, their changes, and changes between their relationships. Tracking is then used when saving or otherwise
