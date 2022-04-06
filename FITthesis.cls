@@ -78,6 +78,13 @@
 % do not indent the first line of a paragraph and add blank line after each
 \DisemulatePackage {parskip}
 \RequirePackage [parfill] {parskip}
+\raggedbottom
+
+% listings and code
+\RequirePackage {minted}
+\renewcommand\listoflistingscaption{List of source codes}
+\renewcommand{\listingscaption}{Code}
+\counterwithin{listing}{chapter}
 
 % for including pdf
 \RequirePackage{pdfpages}
@@ -528,7 +535,7 @@ sp\^ osobom, ktor\'y nezni\v zuje hodnotu Diela (vr\'atane komer\v cn\'eho vyu\v
 	\cleardoublepage
 % 	\setcounter{page}{3}
 	\titlepage
-	
+
 	\setcounter{page}{3}
 	\acknowledgementspage
 
@@ -545,6 +552,9 @@ sp\^ osobom, ktor\'y nezni\v zuje hodnotu Diela (vr\'atane komer\v cn\'eho vyu\v
 
 	\cleardoublepage
 	\listoftablescond
+
+	\cleardoublepage
+	\listoflistings
 
 	\cleardoublepage
 	\listoftodos

@@ -29,7 +29,7 @@ class OGMIQueryableExtensions <<static>> {
     + {static} FirstOrDefaultAsync(query:IQueryable<TSource>, predicate:Expression<Func<TSource, bool>>) : Task<TSource?>
 }
 
-EntityQueryProvider -[hidden]-> OGMIQueryableExtensions
+DbSet -[hidden]-> OGMIQueryableExtensions
 EntityQueryProvider -[hidden]-> DbSet
 
 @enduml

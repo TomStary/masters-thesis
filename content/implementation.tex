@@ -1,11 +1,18 @@
-\chapter {Proof-of-concept implementation}
+\chapter {Implementation of proof-of-concept}
 
-\todo[inline]{introduction}
+With the solution analysis done, we can now start implementing proof-of-concept.
+Before we start the implementation, we should define the set of goals we want to accomplish in the proof-of-concept.
+These are the goals:
+\begin{itemize}
+    \item {Create or update entites in a database}
+    \item {Get list of nodes from a database}
+    \item {Find node by id in the database}
+\end{itemize}
 
-When writing this thesis, we will use the latest version of the C\# and .NET for implementation: C \# 10.0 and .NET 6.0.
-The main tools used are Visual Studio Code with multiple plugins like Copilot and C\# extension. Github is used as VCS. Code is available at this URL https://github.com/TomStary/dotnet-neo4j-ogm or in the appendix of this thesis.
+The main tools used are Visual Studio Code with multiple plugins like Copilot and C\# extension, which provides an IntelliSense.
+Github is used as VCS. Code is available at this URL \url{https://github.com/TomStary/dotnet-neo4j-ogm} or in the appendix of this thesis.
 
-To create a new project, we will use the following command: \texttt{dotnet new classlib} with parameters for the name of the project and others.
+To create a new project, we will use the following command in the terminal application: \texttt{dotnet new classlib} with parameters for the name of the project and others.
 We also want to separate tests from source code of library, so we employ a file structure like this:
 
 \begin{figure}[H]
@@ -22,12 +29,15 @@ We also want to separate tests from source code of library, so we employ a file 
 \end{figure}
 
 With the file structure prepared, we can begin our implementation. During the development of this
-library, we want to use \acrfull{tdd}. We will not go deep into this approach in this chapter
+library, we will use \acrfull{tdd}. We will not go deep into this approach in this chapter,
 as it will be described in the next chapter, but keep in mind that during development, \acrshort{tdd} was used as it is an excellent way to write and test libraries.
 
-\section {Session}
+\section {Common infrastructure}
 
-The session is the most significant part of this library. It is where we will contact the database to store and retrieve data.
+If we want to achieve set goals for proof-of-concept, we will need a common infrastructure like the implementation of \texttt{ISession} interface.
+This interface can be described as an entry point for all of our operations with the database. It will handle both saving entities and creating DbSet
+instances, which can be used to query over entities using LINQ.
+
 For the session to work properly, we need to have a few things:
 
 \begin{itemize}
@@ -35,7 +45,188 @@ For the session to work properly, we need to have a few things:
     \item domain metadata
 \end{itemize}
 
-Both the connection to a database and domain metadata can be acquired from the session's constructor or can be prepared elsewhere.
+The connection to a database and domain metadata can be acquired from the session's constructor or prepared elsewhere. However,
+the best solution is to use \texttt{SessionFactory} instead. Using a factory has many benefits. The client's code will not be responsible for
+creating a connection to the database for each session instance. It will also have precalculated domain metadata. Another benefit is
+that it will be possible to hide the concrete implementation of \texttt{ISession} interface.
+
+Implementation of \texttt{SessionFactory} is simple, we create a class with constructor accepts three parameters:
+\begin{itemize}
+    \item {\texttt{string connectionString} - contains connection string to the database}
+    \item {\texttt{IAuthToken token} - token created by \texttt{AuthTokens} class from Neo4j drivers library, used to authenticate connections to the database}
+    \item {\texttt{params Assembly[] assemblies} - assemblies containing domain models}
+\end{itemize}
+Using the first two parameters, we can create \texttt{IDriver} instance, which will be used to create session instances. The third parameter is special
+because the type of the parameter is prefixed with keyword \texttt{params}. It means we can call the constructor with as many instances of \texttt{Assembly} as we want
+(we are really limited only by language itself, which has a cap at $2^{14}$ parameters). From C\# documentation:
+"No additional parameters are permitted after the \texttt{params} keyword in a method declaration, and only one params keyword is permitted in a method declaration." \cite{billwagner_params_nodate}
+
+The assemblies refer to where domain models are located; we need from the client's code information which assemblies to scan using reflection to pick up classes
+that represent nodes and relationships. We need this data for the correct graph analysis during saving operations.
+
+\subsection {Building metadata}
+
+We described the importance of metadata, but how are we going to obtain them. We already have assemblies from client's code, that should contain
+the domain model. We use these assemblies in \texttt{MetaData} class constructor. Here is an actual implementation of \texttt{MetaData} constructor:
+
+\begin{listing}[H]
+    \begin{minted}[
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {csharp}
+/// <summary>
+/// MetaData constructor.
+/// </summary>
+/// <param name="assemblies">Assemblies containing domain model.</param>
+internal MetaData(params Assembly[] assemblies)
+{
+ _domainInfo = new DomainInfo(assemblies);
+ Schema = new SchemaBuilder(_domainInfo).Build();
+}
+ \end{minted}
+    \caption{\texttt{MetaData} constructor}
+    \label{code:metadataconstructor}
+\end{listing}
+
+We can now see how are the assemblies passed to the \texttt{DomainInfo} constructor, inside this class, we going through all the assemblies
+and scanning all classes obtained by the \texttt{Assembly.GetType} method. This method return an array of \texttt{Type} objects representing
+all the types in the assembly. We can then check each \texttt{Type} if it has an annotation for the node or relationship. We check this by using
+our custom extension methods for \texttt{Type}, \texttt{HasNodeAttribute} and \texttt{HasRelationshipEntityAttribute}. If the type has the annotation,
+we are going to add it to the right dictionary, which will be used during building the schema. We can see how this is done in the following code:
+
+\begin{listing}[H]
+    \begin{minted}[
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {csharp}
+/// <summary>
+/// Check if given <see cref="Type" does have the <see cref="NodeAttribute"> applied as custom attribute.
+/// </summary>
+internal static bool HasNodeAttribute(this Type type)
+ => type.GetCustomAttributes().Any(attribute => attribute is NodeAttribute);
+
+/// <summary>
+/// Check if given <see cref="Type" does have the <see cref="RelationshipEntityAttribute"> applied as custom attribute.
+/// </summary>
+internal static bool HasRelationshipEntityAttribute(this Type type)
+ => type.GetCustomAttributes().Any(attribute => attribute is RelationshipEntityAttribute);
+ \end{minted}
+    \caption{\texttt{HasNodeAttribute} and \texttt{HasRelationshipEntityAttribute} extension methods}
+    \label{code:typeextensions}
+\end{listing}
+
+\subsection{\texttt{inline} keyword}
+
+Keen reader might caught it up, but in last two code examples \ref{code:metadataconstructor} and \ref{code:typeextensions} we used the keyword \texttt{internal}
+as an access modifier to the defined methods. This access modifier makes methods, classes, and properties available only inside the assembly itself. More on this subject
+can be read at the official documentation of C\# language, URL: \url{https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/internal}.
+
+\subsection {Building schema}
+
+Building schema is the last step in creating metadata for the client's domain model.
+We use \texttt{SchemaBuilder} class to build the schema. We need to pass the \texttt{DomainInfo} instance to the \texttt{SchemaBuilder} constructor.
+At the start we create new \texttt{Schema} instance, which is our concrete implementation of \texttt{ISchema} interface.
+
+\texttt{SchemaBuilder.Build} method is responsible for building the schema. It does that by iterating over nodes and relationships and adding them to \texttt{Schema} instance
+using \texttt{ISchema.AddNode} and \texttt{ISchema.AddRelationship} methods. The resulting schema is then returned.
+
+We now have both schema and driver for creating the session. We will store both of them inside \texttt{SessionFactory} instance
+and use them every time the session is created. To help client's code to manage instances of \texttt{SessionFactory} we will create an extension
+of \texttt{IServiceCollection} which is a component of .NET responsible for managing the \acrfull{dic}. The lifetime of the \texttt{SessionFactory} is
+a singleton, meaning that only one instance will be created during the runtime of the application. The extension implementation is shown here \ref{code:collectionextension}.
+
+\begin{listing}[H]
+    \begin{minted}[
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {csharp}
+/// <summary>
+/// Try and register the Neo4j OGM services in the DI container.
+/// </summary>
+public static IServiceCollection AddNeo4jOGMFactory(
+ this IServiceCollection serviceCollection,
+ string connectionString,
+ IAuthToken authToken,
+ params Assembly[] assemblies
+ )
+{
+ serviceCollection.TryAddSingleton(
+ new SessionFactory(connectionString, authToken, assemblies));
+ return serviceCollection;
+}
+ \end{minted}
+    \caption{\texttt{IServiceCollection} extension method}
+    \label{code:collectionextension}
+\end{listing}
+
+With this extension method done, we have finished the common infrastructure, and we can now go and start implementing our
+goals from the beginning of this chapter.
+
+\section{Create or update entities in a database}
+
+\begin{listing}[H]
+    \begin{minted}[
+ frame=lines,
+ framesep=2mm,
+ baselinestretch=1,
+ bgcolor=LightGray,
+ linenos,
+ breaklines
+ ] {csharp}
+ /// <summary>
+/// Internal save method, reponsible for saving entity or entities with defined depth.
+/// Depth defines how many levels of relationships should be traversed.
+/// </summary>
+internal async Task SaveAsync<TEntity>(
+    TEntity entity,
+    int depth = -1) where TEntity : class
+{
+    // create instance of EntityGraphMapper
+    var entityGraphMapper = new EntityGraphMapper(_session.Metadata, _session.MappingContext);
+    // tranform entity/entities into array
+    IEnumerable<TEntity> objects;
+    if (typeof(IEnumerable).IsAssignableFrom(entity.GetType()))
+    {
+        objects = (IEnumerable<TEntity>)entity;
+    }
+    else
+    {
+        objects = new[] { entity };
+    }
+    // map objects into graph and create statements
+    foreach (var item in objects)
+    {
+        entityGraphMapper.Map(item, depth);
+    }
+    // execute statements
+    await _requestExecutor.ExecuteSave(
+        entityGraphMapper.CompilerContext());
+}
+    \end{minted}
+    \caption{Internal implementation of save operation}
+    \label{code:saveimpl}
+\end{listing}
+
+The \texttt{SessionSaveDelegate.SaveAsync} method is directly called from the session. From the snippet above \ref{code:saveimpl}
+we can see how the method is implemented. We are going to use the \texttt{EntityGraphMapper} class to map the entity/entities into
+\texttt{IStatement} objects which represents statements that will be executed in the database. This whole concept is borrowed from
+the official implementation of the Neo4j-\acrshort{ogm} library for Java.
+
+\subsection{\texttt{EntityGraphMapper}}
+
+The \texttt{EntityGraphMapper} class is responsible for mapping the entity/entities into \texttt{IStatement} objects.
 
 \todo[inline]{Summary}
 
