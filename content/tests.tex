@@ -39,14 +39,15 @@ the coverage, we are going to use coverlet tool, which is cross platform coverag
 formats, but for our case, we will use \texttt{lcov} format, which can be then loaded by extension in Visual Studio Code and display coverage information directly in files.
 We can also generate a report of the coverage using these commands.
 \begin{itemize}
-    \item {dotnet test /p:CollectCoverage=true /p:CoverletOutput=../../lcov.info /p:CoverletOutputFormat=lcov}
-    \item {genhtml lcov.info -o ./CoveragerReport/}
+    \item {\texttt{dotnet test \textbackslash\\
+              /p:CollectCoverage=true \textbackslash\\/p:CoverletOutput=../../lcov.info \textbackslash\\/p:CoverletOutputFormat=lcov}}
+    \item {\texttt{genhtml lcov.info -o ./CoveragerReport/}}
 \end{itemize}
 First command is to execute test and generate \texttt{lcov.info} file, which contains coverage information, this file is also used by extension for Visual Studio Code
 named Coverage Gutters.
 Second command is to generate html report from \texttt{lcov.info} file.
 
-Here is an example of the report from this project.
+Here \ref{fig:report} is an example of the report from this project.
 
 \begin{figure}[H]
     \centering
@@ -125,8 +126,9 @@ class and method.
  linenos,
  breaklines
  ] {xml}
- <ItemGroup>
- <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+<ItemGroup>
+ <AssemblyAttribute
+ Include="System.Runtime.CompilerServices.InternalsVisibleTo">
    <_Parameter1>Neo4j.OGM.Tests</_Parameter1>
  </AssemblyAttribute>
 </ItemGroup>
@@ -134,5 +136,23 @@ class and method.
     \caption{Edit of \texttt{Neo4j.OGM.csproj} to access internal classes and methods inside test project}
     \label{code:csprojinternal}
 \end{listing}
+
+Using this alteration of the \texttt{Neo4j.OGM.csproj} to access internal classes and methods inside test project,
+we can now prepare test for internal classes and methods.
+
+\section {Setup and cleanup}
+
+Some of our tests will need to prepare data and mocks, we call this step of tests a setup step. nUnit for example, uses annotations
+to mark cleanup (\texttt{TearDownAttribute}) and setup (\texttt{SetUpAttribute}) methods. However, in xUnit, we are using only constructors and \texttt{IDisposable}
+interface for setup and cleanup respectively. This approach has a limitations in not beign able to safely perform asynchronous operations,
+but xUnit has a solution for this too, \texttt{IAsyncLifetime} is an interface from xUnit, that provides means to asynchronously perform setup and cleanup
+methods.
+
+\todo[inline]{Add code example for xUnit setup and cleanup}
+
+Appart from setup and cleanup methods, xUnit also offers an ability to share context between test, either in one class or across multiple classes
+using class fixtures or collection fixtures, more on this subject can be found in official documentation of xUnit framework.
+
+
 
 \todo[inline]{TBD}

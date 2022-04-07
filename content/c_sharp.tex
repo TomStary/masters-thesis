@@ -21,7 +21,7 @@ cross-platform without recompiling code for different processors, at the cost of
 
 .NET is a framework written for C\# and other languages such as F\# and
 Visual Basic and Microsoft also develop them.
-In their own words: ".NET is an open source developer
+In their own words: ".NET is an open-source developer
 platform, created by Microsoft, for building many different types of applications." \cite{noauthor_what_nodate-2}
 
 To compile a library or program with a .NET framework,
@@ -96,7 +96,7 @@ This feature is used in Entity Framework.
 
 With knowledge from previous sections of this chapter, we can now study Entity Framework.
 
-When we are talking about Entity Framework, we are talking about their latest version of this framework, Entity Framework Core or EFCore, as it is known in the community.
+When we are talking about Entity Framework, we are talking about the latest version of this framework, Entity Framework Core or EFCore, as it is known in the community.
 This version was released for .NET Core 1.0, the first Microsoft version of .NET purposely built for multiplatform use.
 
 To use Entity Framework, developers must add another dependency to their projects. This dependency is for Entity Framework and its called provider, which is used
@@ -105,10 +105,10 @@ to provide connection and translation capabilities for Entity Framework to work 
 If we want to know how Entity Framework translates LINQ queries to SQL queries, we need to look at implementing any publicly available provider.
 In a perfect world, we would use the documentation for how to do it, but there is no current documentation at the time of writing.
 
-To study, we will choose a provider for the Postgresql database. There are two reasons for why this provider, the first one is the author's experience with these providers and the second one
+To study, we will choose a provider for the Postgresql database. There are two reasons why this provider. The first one is the author's experience with these providers, and the second one
 is because a third party created this provider.
 
-Complete code for this provider is available at GitHub server at this URL: \url{https://github.com/npgsql/efcore.pg}.
+Complete code for this provider is available on the GitHub server at this URL: \url{https://github.com/npgsql/efcore.pg}.
 
 \subsection {Postgresql provider}
 
@@ -151,9 +151,10 @@ An instance of \texttt{EntityFinder} that implements \texttt{IEntityFinder} is c
 This cache is then checked to see if the entity we are trying to find is not already there. If it was the case, then the cached value is returned. Otherwise, a new query is created
 using \texttt{FirstOrDefaultAsync} method which is \texttt{IQueryable<T>} extension method defined in the Entity Framework Core.
 
-Queries are generally created by creating a custom expression tree, which is then translated to \acrshort{sql}.
+Queries are created by creating a custom expression tree, which is then translated to \acrshort{sql}. This is done by various visitors visiting each expression
+in the expression tree. The goal is a transformation of LINQ queries into \acrshort{sql} ones and their evaluation.
 
 \section {Summary}
 
-\todo[inline]{TBD}
-
+We are now acquainted with Entity Framework and some of its principles. This chapter gave us an idea of what it means to implement
+\acrshort{ogm} with LINQ support. Based on this research, we will build the part of the library responsible for translating LINQ to Cypher.

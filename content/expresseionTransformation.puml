@@ -1,0 +1,24 @@
+@startuml Expression transformation
+!theme vibrant
+
+[*] --> LINQ
+
+state LINQ {
+    [*] --> Expression
+    Expression --> Processing
+}
+
+state Processing {
+    [*] --> QueryRootExpression
+    QueryRootExpression --> ShapedQueryExpression
+    Processing --> Translation
+}
+
+state Translation {
+    [*] --> Expression.Call
+    Expression.Call : Translated query with mapper injections
+}
+
+Translation --> [*]
+
+@enduml

@@ -1,0 +1,23 @@
+@startuml Translation Sequence
+
+
+create ParameterExtractingExpressionVisitor
+QueryCompiler -> ParameterExtractingExpressionVisitor : ExtractParameters
+ParameterExtractingExpressionVisitor -> QueryCompiler : Expression
+
+create QueryCompilationContext
+QueryCompiler -> QueryCompilationContext : CreateQueryExecutor
+
+create QueryableMethodTranslationExpressionVisitor
+QueryCompilationContext -> QueryableMethodTranslationExpressionVisitor : Visit
+QueryableMethodTranslationExpressionVisitor -> QueryCompilationContext : ShapedQueryExpression
+
+create ShapedQueryCompilinExpressionVisitor
+QueryCompilationContext -> ShapedQueryCompilinExpressionVisitor : Visit
+ShapedQueryCompilinExpressionVisitor -> QueryCompilationContext : Expression.Call
+
+QueryCompilationContext -> QueryCompiler : Func<QueryContext, TResult>
+
+
+
+@enduml
