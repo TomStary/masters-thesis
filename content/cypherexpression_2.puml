@@ -1,0 +1,75 @@
+@startuml Cypher Expressions part 2
+!theme vibrant
+
+left to right direction
+
+' class MatchExpression {
+'     + Limit : CypherExpression? <<get>>
+'     + Predicate : CypherExpression? <<get>>
+' }
+
+' class ShapedQueryExpression {
+'     + ShapedQueryExpression(queryExpression:Expression, shaperExpression:Expression)
+' }
+
+' class ProjectionBindingExpression {
+'     + ProjectionBindingExpression(queryExpression:Expression, projectionMember:ProjectionMember, type:Type)
+' }
+
+class CypherUnaryExpression {
+    + CypherUnaryExpression(operatorType:ExpressionType, operand:CypherExpression, type:Type)
+}
+
+class KeyAccessExpression {
+    + KeyAccessExpression(property:PropertyInfo, accessExpression:Expression)
+    + Name : string <<get>>
+    + <<override>> ToString() : string
+}
+
+class CypherConstantExpression {
+    + <<virtual>> Value : object? <<get>>
+}
+
+' class ReturnExpression {
+'     + Alias : string <<get>>
+'     + ReturnExpression(entityType:Type, rootAlias:string)
+'     + <<override>> ToString() : string
+' }
+
+class CypherParameterExpression {
+    + Name : string <<get>>
+    + CypherParameterExpression(parameterExpression:ParameterExpression, typeMapping:CypherTypeMapping?)
+}
+
+class CypherBinaryExpression {
+    + CypherBinaryExpression(operatorType:ExpressionType, left:CypherExpression, right:CypherExpression, type:Type)
+}
+
+' class QueryRootExpression {
+'     + <<virtual>> QueryProvider : IAsyncQueryProvider? <<get>>
+'     + <<override>> CanReduce : bool <<get>>
+'     + QueryRootExpression(asyncQueryProvider:IAsyncQueryProvider, entityType:Type)
+' }
+
+class CypherExpression {
+    + CypherExpression(type:Type, typeMapping:CypherTypeMapping?)
+    + TypeMapping : CypherTypeMapping? <<get>> <<internal set>>
+}
+
+' Expression <|-- QueryRootExpression
+
+' Expression <|-- MatchExpression
+' Expression <|-- ShapedQueryExpression
+' Expression <|-- ProjectionBindingExpression
+' Expression <|-- ReturnExpression
+' MatchExpression --> "ReturnExpression" ReturnExpression
+CypherExpression <|-- CypherUnaryExpression
+CypherExpression <|-- CypherConstantExpression
+CypherExpression <|-- KeyAccessExpression
+Expression <|-- CypherExpression
+CypherExpression <|-- CypherParameterExpression
+CypherExpression <|-- CypherBinaryExpression
+CypherBinaryExpression --> "Left" CypherExpression
+CypherBinaryExpression --> "Right" CypherExpression
+
+@enduml
