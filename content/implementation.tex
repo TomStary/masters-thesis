@@ -45,7 +45,7 @@ For the session to work properly, we need to have a few things:
     \item domain metadata
 \end{itemize}
 
-The connection to a database and domain metadata can be acquired from the session's constructor or prepared elsewhere. However,
+The connection to a database and domain metadata can be acquired from the session's constructor or elsewhere. However,
 the best solution is to use \texttt{SessionFactory} instead. Using a factory has many benefits. The client's code will not be responsible for
 creating a connection to the database for each session instance. It will also have precalculated domain metadata. Another benefit is
 that it will be possible to hide the concrete implementation of \texttt{ISession} interface.
@@ -58,11 +58,11 @@ Implementation of \texttt{SessionFactory} is simple, we create a class with cons
 \end{itemize}
 Using the first two parameters, we can create \texttt{IDriver} instance, which will be used to create session instances. The third parameter is special
 because the type of the parameter is prefixed with keyword \texttt{params}. It means we can call the constructor with as many instances of \texttt{Assembly} as we want
-(we are really limited only by language itself, which has a cap at $2^{14}$ parameters). From C\# documentation:
+(we are limited only by language itself, which has a cap at $2^{14}$ parameters). From C\# documentation:
 "No additional parameters are permitted after the \texttt{params} keyword in a method declaration, and only one params keyword is permitted in a method declaration." \cite{billwagner_params_nodate}
 
 The assemblies refer to where domain models are located; we need from the client's code information which assemblies to scan using reflection to pick up classes
-that represent nodes and relationships. We need this data for the correct graph analysis during saving operations.
+representing nodes and relationships. We need this data for the correct graph analysis during saving operations.
 
 \subsection {Building metadata}
 
@@ -126,7 +126,7 @@ internal static bool HasRelationshipEntityAttribute(this Type type)
 \subsection{\texttt{inline} keyword}
 
 Keen reader might caught it up, but in last two code examples \ref{code:metadataconstructor} and \ref{code:typeextensions} we used the keyword \texttt{internal}
-as an access modifier to the defined methods. This access modifier makes methods, classes, and properties available only inside the assembly itself. More on this subject
+as an access modifier to the defined methods. This access modifier makes methods, classes, and properties available only inside the assembly. More on this subject
 can be read at the official documentation of C\# language, URL: \url{https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/internal}.
 
 \subsection {Building schema}
@@ -190,29 +190,29 @@ goals from the beginning of this chapter.
 /// </summary>
 public async Task SaveAsync<TEntity>(TEntity entity) where TEntity : class
 {
-    CheckDisposed();
+ CheckDisposed();
 
-    // tranform entity/entities into array
-    IEnumerable<TEntity> objects;
-    if (typeof(IEnumerable).IsAssignableFrom(entity.GetType()))
-    {
-        objects = (IEnumerable<TEntity>)entity;
-    }
-    else
-    {
-        objects = new[] { entity };
-    }
+ // tranform entity/entities into array
+ IEnumerable<TEntity> objects;
+ if (typeof(IEnumerable).IsAssignableFrom(entity.GetType()))
+ {
+ objects = (IEnumerable<TEntity>)entity;
+ }
+ else
+ {
+ objects = new[] { entity };
+ }
 
-    // map objects into graph and create statements
-    foreach (var item in objects)
-    {
-        _entityGraphMapper.Map(item, -1);
-    }
+ // map objects into a graph and creates statements
+ foreach (var item in objects)
+ {
+ _entityGraphMapper.Map(item, -1);
+ }
 
-    // execute statements
-    await ExecuteSave(_entityGraphMapper.CompilerContext());
+ // execute statements
+ await ExecuteSave(_entityGraphMapper.CompilerContext());
 }
-    \end{minted}
+ \end{minted}
     \caption{Internal implementation of save operation}
     \label{code:saveimpl}
 \end{listing}
@@ -225,9 +225,9 @@ the official implementation of the Neo4j-\acrshort{ogm} library for Java.
 
 \subsection{\texttt{EntityGraphMapper}}
 
-The \texttt{EntityGraphMapper} is reponsible for mapping the entities that will be translated into Cypher as was stated in the paragraph before.
+The \texttt{EntityGraphMapper} is responsible for mapping the entities that will be translated into Cypher, as was stated in the paragraph before.
 The resulting structure of this translation is saved inside a compiler context. The compiler context is a container for all the information
-that are used during mapping and also generating Cypher queries. It is tracking visited nodes as well as visited relationships.
+used during mapping and generating Cypher queries. It tracks visited nodes as well as visited relationships.
 
 Inside the \texttt{ICompilerContext} is saved the instance of compiler, in this case it is \texttt{IMultiStatementCypherCompiler},
 which is responsible for generating create and update Cypher queries. This compiler is used inside the\linebreak\texttt{Session.ExecuteSave} method.
@@ -245,30 +245,30 @@ which is responsible for generating create and update Cypher queries. This compi
  ] {csharp}
 public interface IMultiStatementCypherCompiler
 {
-    CompilerContext Context { get; }
-    NodeBuilder CreateNode(long id);
-    IEnumerable<IStatement> CreateNodesStatements();
-    NodeBuilder ExistingNode(long id);
-    RelationshipBuilder ExistingRelationship(long relId, string type);
-    IEnumerable<IStatement> GetAllStatements();
-    bool HasStatementDependentOnNewNode();
-    RelationshipBuilder NewRelationship(string type);
-    RelationshipBuilder NewRelationship(string type, bool mapBothDirections);
-    void UseStatementFactory(IStatementFactory statementFactory);
+ CompilerContext Context { get; }
+ NodeBuilder CreateNode(long id);
+ IEnumerable<IStatement> CreateNodesStatements();
+ NodeBuilder ExistingNode(long id);
+ RelationshipBuilder ExistingRelationship(long relId, string type);
+ IEnumerable<IStatement> GetAllStatements();
+ bool HasStatementDependentOnNewNode();
+ RelationshipBuilder NewRelationship(string type);
+ RelationshipBuilder NewRelationship(string type, bool mapBothDirections);
+ void UseStatementFactory(IStatementFactory statementFactory);
 }
-    \end{minted}
+ \end{minted}
     \caption{\texttt{IMultiStatementCypherCompiler} interface}
     \label{code:IMultiStatementCypherCompiler}
 \end{listing}
 
-This interface defines a set of methods needed for preparing and generating \texttt{IStatement} instances, that will then executed on the database.
+This interface defines a set of methods needed for preparing and generating \texttt{IStatement} instances that will then be executed on the database.
 The \texttt{NodeBuilder} and \texttt{RelationshipBuilder} classes are what used inside\linebreak\texttt{EntityGraphMapper} and are the building blocks for
 \texttt{IStatement} instances.
 
 \subsection{\texttt{IStatement}}
 
-The \texttt{IStatement} was mentioned multiple times, it is simple wrapper around string containing the Cypher query and dictionary of parameters
-that will be used in the query. These two values can be then used to generate \texttt{Query} object from Neo4j.Driver library. \texttt{Query} is used by
+The \texttt{IStatement} was mentioned multiple times. It is a simple wrapper around a string containing the Cypher query and dictionary of parameters
+used in the query. These two values can then be used to generate \texttt{Query} object from Neo4j.Driver library. \texttt{Query} is used by
 Neo4j.Driver in their transaction implementation.
 
 \section{Mapping LINQ to Cypher}
@@ -280,16 +280,16 @@ The process of mapping LINQ to Cypher can be divided into these steps:
     \item {map our expression tree into Cypher}
     \item {map result from database into result object.}
 \end{itemize}
-We will look at each of these steps and show some of the implementation.
+We will look at each step and show some of the implementations.
 
 \subsection{Prepare LINQ query}
 
-Before we translate the query, we have to prepare our LINQ query. Preparation starts with definition of asynchronous method in the \texttt{DbSet<T>} class
-or in the \texttt{IQueryable<T>} extension of an asynchronous method. The best example of this definition would be method \texttt{FindAsync} as it is defined
-in the \texttt{DbSet<T>} class, but it also uses an extension method for \texttt{IQueryable<T>} interface. The reason behind using an asynchronous methods is
-the implementation of \texttt{IDriver} which has only asynchronous methods for work with transactions.
+Before we translate the query, we have to prepare our LINQ query. Preparation starts with the definition of the asynchronous method in the \texttt{DbSet<T>} class
+or the \texttt{IQueryable<T>} extension of an asynchronous method. The best example of this definition would be method \texttt{FindAsync} as it is defined
+in the \texttt{DbSet<T>} class, but it also uses an extension method for \texttt{IQueryable<T>} interface. The reason behind using asynchronous methods is
+the implementation of \texttt{IDriver} which has only asynchronous methods for working with transactions.
 
-Appart from the checks of the key values, the method will also create a lambda expression that will be translated into the \texttt{WHERE} statement
+Apart from the checks of the key values, the method will also create a lambda expression that will be translated into the \texttt{WHERE} statement
 in the Cypher query. This lambda expression is then passed to the \texttt{FirstOrDefaultAsync} method, which is an extension of the \texttt{IQueryable<T>} interface
 as we discussed above. The example below \ref{code:dbSetFindAsync} shows the exact implementation of the \texttt{DbSet<T>.FindAsync} method.
 Inside the extension method of\linebreak\texttt{FirstOrDefaultAsync}, we are calling the \texttt{IAsyncQueryProvider.ExecuteAsync<T>} method. This method
@@ -306,22 +306,22 @@ is responsible for translation and execution of the query.
  ] {csharp}
 public virtual Task<TEntity?> FindAsync(params object?[]? keyValues)
 {
-    if (keyValues == null
-        || keyValues.Any(key => key == null))
-    {
-        return Task.FromResult<TEntity?>(default);
-    }
+ if (keyValues == null
+ || keyValues.Any(key => key == null))
+ {
+ return Task.FromResult<TEntity?>(default);
+ }
 
-    var keyProperties = typeof(TEntity).GetProperties()
-        .Where(property => property.GetCustomAttribute<KeyAttribute>() != null)
-        .ToArray();
+ var keyProperties = typeof(TEntity).GetProperties()
+ .Where(property => property.GetCustomAttribute<KeyAttribute>() != null)
+ .ToArray();
 
-    if (keyProperties.Length != keyValues.Length)
-    {
-        throw new ArgumentException("Incorrect number of key values");
-    }
+ if (keyProperties.Length != keyValues.Length)
+ {
+ throw new ArgumentException("Incorrect number of key values");
+ }
 
-    return this.FirstOrDefaultAsync(BuildLambda(keyProperties, new ValueBuffer(keyValues)));
+ return this.FirstOrDefaultAsync(BuildLambda(keyProperties, new ValueBuffer(keyValues)));
 }
 \end{minted}
     \caption{\texttt{DbSet<T>.FindAsync} implementation}
@@ -330,7 +330,7 @@ public virtual Task<TEntity?> FindAsync(params object?[]? keyValues)
 
 \subsection{Expression visitors}
 
-Our goal is to create a custom expression tree, that would be copying a Cypher with additional information about the mapping of the result.
+Our goal is to create a custom expression tree that would copy a Cypher with additional information about the mapping of the result.
 
 First of all, we will introduce such classes to which we want to translate our LINQ expression tree \ref{fig:cypherexpression}.
 
@@ -356,19 +356,17 @@ with \texttt{ReturnExpression} and other predicates and expressions. This expres
 
 The visitor responsible for the actual translation to Cypher is\linebreak\texttt{CypherExpressionVisitor}. Inside this expression visitor,
 we declare methods that corresponds with our custom classes, like \texttt{VisitCypherBinary} or \texttt{VisitMatch}. Each of these methods translates part of the expression
-tree into Cypher query. When the translation is done, the generated query is used in our custom enumerator, which enumerates the result from the database. This enumerator
+tree into a Cypher query. When the translation is done, the generated query is used in our custom enumerator, which enumerates the result from the database. This enumerator
 is implemented inside \texttt{QueryingEnumerable<T>} class.
 
-With the enumerator done, and query generated, we need to execute our custom expression tree, to get the result we want to. To do this, we will use another visitor, in
-this case, this visitor needs to visit our\linebreak\texttt{ShapedQueryExpression} and create appropriate call which enumerates and returns the result.
-The name of the class is\linebreak\texttt{ShapedQueryCompilingExpressionVisitor} and it checks if the result should be resulting in single value or collection.
-Inside this visitor is also defined a custom lambda function which will take the insides of\linebreak\texttt{ProjectionBindingExpression} and translate them to our result object.
+With the enumerator done, and the query generated, we need to execute our custom expression tree to get the result we want. To do this, we will use another visitor. In this case, this visitor needs to visit our\linebreak\texttt{ShapedQueryExpression} and create a right call that enumerates and returns the result.
+The name of the class is\linebreak\texttt{ShapedQueryCompilingExpressionVisitor} and it checks if the result should be resulting in a single value or collection.
+Inside, this visitor has also defined a custom lambda function, which will take the insides of\linebreak\texttt{ProjectionBindingExpression} and translate them to our result object.
 
 \section{Summary}
 
-This chapter was about an implementation of the library we designed in chapter before. We described the structure of our project and then implemented
-two key goals of our proof-of-concept. With the first goal, we implemented the save operation for entities, we used metadata with information about graph
-schema to properly create nodes and relationships. The second goal was mapping LINQ to Cypher query and extracting result from database structure,
-we had to implement our own expressions structure, to transform the expression tree in such way, that we would be able to translate it to Cypher query.
+This chapter was about implementing the library we designed in the chapter before. We described the structure of our project and then implemented
+two critical goals of our proof-of-concept. With the first goal, we implemented the save operation for entities. We used metadata with information about graph
+schema to properly create nodes and relationships. The second goal was mapping LINQ to Cypher query and extracting results from the database structure; we had to implement our own expressions structure to transform the expression tree so that we would be able to translate it to Cypher query.
 
 

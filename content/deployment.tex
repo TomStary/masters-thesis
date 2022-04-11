@@ -1,18 +1,17 @@
 \chapter {Deployment}
 
-In this chapter, will focus on deploying our library to NuGet repository, the use of GitHub actions
-and also setting up our repository in a way, that will attract more contributors.
+This chapter will focus on deploying our library to the NuGet repository, the use of GitHub actions, and setting up our repository to attract more contributors.
 
 \section {NuGet repository}
 
-The main source of packages that are publicly available for .NET, is \url{https://www.nuget.org}. Every developer can
-upload their own packages to this repository. Anyone can then search and download packages from this feed.
+The primary source of packages that are publicly available for .NET is \url{https://www.nuget.org}. Every developer can
+upload their packages to this repository. Anyone can then search and download packages from this feed.
 
-Before we upload our library to the NuGet repository, we need to properly set our project. We can find out
-everything we need on "Package authoring best practices" page in Microsoft's documentation
+Before uploading our library to the NuGet repository, we need to set our project properly. We can find out
+everything we need on the "Package authoring best practices" page in Microsoft's documentation
 \url{https://docs.microsoft.com/en-gb/nuget/create-packages/package-authoring-best-practices}.
 
-From documentation page, we know that we need to set following properties.
+We know that we need to set the following properties from the documentation page.
 
 \begin{itemize}
     \item \texttt{PackageId}: name of the package, which will be used in NuGet repository.
@@ -21,16 +20,30 @@ From documentation page, we know that we need to set following properties.
     \item \texttt{Copyright}: copyright details of the package.
 \end{itemize}
 
-With these properties set, we can now register on NuGet and create an \acrshort{api} key for uploading package
-using command line. There is also possibility to upload a package using form on NuGet page itself, but we want to
+With these properties set, we can now register on NuGet and create an \acrshort{api} key for uploading packages
+using the command line. There is also a possibility to upload a package using the form on the NuGet page itself, but we want to
 have this process automated using GitHub actions.
 
 \section{GitHub actions}
 
 GitHub actions is a tool for automation of \acrfull{cicd} process. This tool allows us to automate tasks like
-running tests, checking build status, publishing packages, etc.
+running tests, checking build status, and publishing packages. It is also possible to run tasks on a schedule, like creating nightly
+builds of our application or library.
 
+We created three different workflows, each for a different operation in \acrshort{vcs}. The operations are:
+\begin{itemize}
+    \item push - every push of new commits onto the GitHub server will trigger this workflow.
+    \item pull request - every new pull request to the main branch or update to the pull request will trigger this workflow.
+    \item release - each new tag in the main branch will trigger this workflow.
+\end{itemize}
+These workflows will check our library's build status and the successful execution of the tests we wrote for our library.
+In the case of release, the workflow will also create a new version of our library and publish it to the NuGet repository.
 
+Workflows also offer us the possibility for static analysis of the codebase. This analysis is helpful as it scans code for common mistakes and
+potential vulnerabilities. The static analysis is not used in this project, but it is something we can use in the future.
 
+\section{Setting up repository}
 
+One of our main goals with this library is that it will be easy for the community to expand our solution.
 
+\todo[inline]{finish chapter}
