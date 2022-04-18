@@ -1,3 +1,36 @@
 \chapter{Evaluation of the project}
 
-\todo[inline]{TBD}
+Our goal was to create a proof-of-concept for the library for the .NET, that would be able to map objects into graphs and vice versa
+with the ability to execute queries on the Neo4j graph database. We set two goals for the project:
+\begin{itemize}
+    \item {Create or update nodes in a database}
+    \item {Map LINQ to Cypher}
+\end{itemize}
+
+These two goals were achieved with some limitations. For the first goal, we used the implementation of the Neo4j-\acrshort{ogm} library written for Java
+as our base. This allowed us to quickly develop the save mechanism for our library, although it was not the best solution. The problem with this solution
+is the different architecture of the library in the Java and .NET. In the .NET, we would greatly benefit from the ability to use dependency injection, which is not
+used in Java implementation. One thing we could also borrow from the Entity Framework is change tracker, this component of the Entity Framework gives us ability
+to track changes and save only the changes, which is not possible in the Java implementation, that heavily relies on remapping of the objects on each save operation.
+
+The second goal was to use the LINQ to create Cypher queries for the Neo4j database. This goal was far more challinging to acomplish then the first one.
+We had to remap original expression tree into a new one, that could be translated into Cypher query and with the use of Neo4j driver for .NET executed and
+mapped to the objects. We acomplished this goal also with some limitations, but these limitations were more about the time and the size of the implementation itself than
+the problem with the architecture. The only missing part for this goal is the ability to correctly map relationship between objects and agregation methods.
+
+\section{Next steps}
+
+In the previous chapter we set up our repository for this library, that it would be easy for community to expand our solution, however we did not present the next steps that should be
+taken to finish the library. We will propose then now, and also document then in the repository using issues. The next steps should be the following:
+\begin{itemize}
+    \item {Implement the change tracker.}
+    \item {Refactor internal classes to use dependency injection.}
+    \item {Implement the save operation with the use of the change tracker.}
+    \item {Implement the mapping of the objects using LINQ like it is done in the Entity Framework.}
+\end{itemize}
+With these steps done, we could release our library as production ready and we could be used in commercial projects.
+
+One other thing is missing for this project and that is proper user oriented documentation. As this is a proof-of-concept, we did not create any documentation for the library.
+However for the future development, there should be also a goal of creating proper documentation for the library.
+
+The author of this publication will pursue the next steps to finish the project even after finishing this publication.
