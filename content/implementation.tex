@@ -8,7 +8,7 @@ These are the goals:
     \item {Map LINQ to Cypher}
 \end{itemize}
 
-The main tools used are Visual Studio Code with multiple plugins like Copilot and C\# extension, which provides an IntelliSense.
+The main tools used are Visual Studio Code with multiple plugins like Copilot and \CS extension, which provides an IntelliSense.
 Github is used as VCS. Code is available at this URL \url{https://github.com/TomStary/dotnet-neo4j-ogm} or in the appendix of this thesis.
 
 To create a new project, we will use the following command in the terminal application: \texttt{dotnet new classlib} with parameters for the name of the project and others.
@@ -58,7 +58,7 @@ Implementation of \texttt{SessionFactory} is simple, we create a class with cons
 \end{itemize}
 Using the first two parameters, we can create \texttt{IDriver} instance, which will be used to create session instances. The third parameter is special
 because the type of the parameter is prefixed with keyword \texttt{params}. It means we can call the constructor with as many instances of \texttt{Assembly} as we want
-(we are limited only by language itself, which has a cap at $2^{14}$ parameters). From C\# documentation:
+(we are limited only by language itself, which has a cap at $2^{14}$ parameters). From \CS documentation:
 "No additional parameters are permitted after the \texttt{params} keyword in a method declaration, and only one params keyword is permitted in a method declaration." \cite{billwagner_params_nodate}
 
 The assemblies refer to where domain models are located; we need from the client's code information which assemblies to scan using reflection to pick up classes
@@ -127,7 +127,7 @@ internal static bool HasRelationshipEntityAttribute(this Type type)
 
 Keen reader might caught it up, but in last two code examples \ref{code:metadataconstructor} and \ref{code:typeextensions} we used the keyword \texttt{internal}
 as an access modifier to the defined methods. This access modifier makes methods, classes, and properties available only inside the assembly. More on this subject
-can be read at the official documentation of C\# language, URL: \url{https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/internal}.
+can be read at the official documentation of \CS language, URL: \url{https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/internal}.
 
 \subsection {Building schema}
 

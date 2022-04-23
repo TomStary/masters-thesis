@@ -6,7 +6,23 @@
             ],
             "config": {
                 "audience": "expert",
-                "dialect": "american",
+                "dialect": "british",
+                "domain": "academic",
+                "emotions": [
+                    "analytical"
+                ],
+                "goals": [
+                    "inform"
+                ]
+            }
+        },
+        {
+            "files": [
+                "**/content/*.tex"
+            ],
+            "config": {
+                "audience": "expert",
+                "dialect": "british",
                 "domain": "academic",
                 "emotions": [
                     "analytical"

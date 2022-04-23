@@ -1,25 +1,25 @@
 \chapter {State of the art EntityFramework and .NET}
 
-If anyone wants to create \acrshort{orm} or \acrshort{ogm} for .NET in C\#, they should go through some principles that are used in
+If anyone wants to create \acrshort{orm} or \acrshort{ogm} for .NET in \CS, they should go through some principles that are used in
 EntityFramework and .NET. This chapter will go through some of these principles with insight into the technologies used.
 
-We will start with studying C\# and then .NET and LINQ, part of .NET. Then we will go through EntityFramework itself.
+We will start with studying \CS and then .NET and LINQ, part of .NET. Then we will go through EntityFramework itself.
 
-\section {C\#}
-C\# is a general-purpose, type-safe, object-oriented programming language, the goal of which is programmer productivity.
+\section {\CS}
+\CS is a general-purpose, type-safe, object-oriented programming language, the goal of which is programmer productivity.
 To this end, the language balances simplicity, expressiveness,
 and performance. \cite{albahari_c_2019}
 
-Microsoft is developing and maintaining the C\# language. When writing this thesis, the current version of the C\# is C\#10.
+Microsoft is developing and maintaining the \CS language. When writing this thesis, the current version of the \CS is \CS10.
 
-The C\# code is statically compiled down to \acrlong{cil}. \acrshort{cil} cannot be run by itself on a machine.
+The \CS code is statically compiled down to \acrlong{cil}. \acrshort{cil} cannot be run by itself on a machine.
 \acrshort{cil} runtime or \acrfull{clr} must be used. Using \acrfull{jit} compilation, \acrshort{clr} reads \acrshort{cil} and translates \acrshort{cil} to native
 code or sometimes called machine code. The machine's processor can then read machine code. Using \acrshort{cil} and \acrshort{clr} has benefits in running code
 cross-platform without recompiling code for different processors, at the cost of some performance. \cite{rodenburg_code_2021}
 
 \section {.NET}
 
-.NET is a framework written for C\# and other languages such as F\# and
+.NET is a framework written for \CS and other languages such as F\# and
 Visual Basic and Microsoft also develop them.
 In their own words: ".NET is an open-source developer
 platform, created by Microsoft, for building many different types of applications." \cite{noauthor_what_nodate-2}
@@ -32,7 +32,7 @@ for example, in Visual Studio from Microsoft.
 \subsection{Reflection}
 
 The reflection pattern is used to access the class and its methods and fields. We can access the class and its methods and fields without knowing its implementation.
-This feature has to be supported by the programming language itself. For example, C\# supports reflection and is widely used in many popular libraries.
+This feature has to be supported by the programming language itself. For example, \CS supports reflection and is widely used in many popular libraries.
 
 Reflection works by scanning the program's implementations and creating metadata about the classes and methods.
 This metadata is stored in the program's memory and made accessible at runtime.

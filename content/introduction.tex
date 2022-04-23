@@ -2,32 +2,42 @@
 
     \section{Graphs are everywhere}
 
-    In today's world, everything is highly connected. Graphs are an easy way to describe and visualize these relations. Graphs can help to see connections we would otherwise catch.
+    In today's world, everything is highly connected.
+    Graphs are an easy way to describe and visualize these relations and can help to see connections we would not otherwise catch.
 
-    We do not use graphs to store data in most of our applications, mainly because the first applications were made to take paper forms into the digital world. To keep these paper forms in digital format, we use relational databases.
+    We do not use graphs to store data in most of our applications today, mainly because the first applications were made to take paper forms into the digital world.
+    To keep these paper forms in digital format, we use relational databases.
 
-    Since then, relational databases have been the go-to for every developer when creating a new application. Using a relational database is helpful for several reasons, mainly because the development cost is lower than using new technologies, and everyone is familiar with this type of database system. However, the lower development price benefits are diminished in today's world. Numerous problems come with using relational databases,
-    lengthy searches for specific highly connected data and more complex relations are the main reason why \Gls{nosql} databases have been gaining so many tractions for the last decade.
+    Since then, relational databases have been the go-to for every developer when creating a new application.
+    Using a relational database is helpful for several reasons, mainly because the development cost is lower than using new technologies, and everyone is familiar with this type of \acrshort{dbms}.
+    However, the lower development price benefits are diminished in today's world by the numerous problems with using relational databases.
+    For example, lengthy searches for specific highly connected data and more complex relations are the main reason why \Gls{nosql} databases have been gaining so many tractions for the last decade.
 
-    The graph databases are made explicitly with relations in mind. The nature of the graph itself gives it. Every vertex can have its connection with another one or even itself. This kind of connection is not possible with a relational database where connecting two rows means creating a relationship between two tables. With the speed of finding highly connected data, users can define indexes in relational databases to help with that, but there is only so much he can do. Indexes can slow the whole system down, inserts take longer to finish, and the entire database will increase memory consumption.
+    The graph databases are made explicitly with relationships in mind.
+    Every vertex can have its connection with another one or even itself.
+    This kind of connection is not possible with a relational database where connecting two rows means creating a relationship between two tables.
+    To help with the performance of finding highly connected data, users can define indexes in relational databases, but there is only so much he can do.
+    Indexes can slow the whole system down, inserts will be longer, and the entire database will increase memory consumption.
 
     \subsection{What can graph databases offer?}
 
-    Graph databases are no silver bullet, and they cannot solve all our problems. When designing a new piece of software, we should always ask ourselves what the best technologies for the situation we are trying to solve is.
+    Graph databases are no silver bullet, and they cannot solve all our problems.
+    When designing a new piece of software, we should always ask ourselves what the best technologies for the situation we are trying to solve is.
 
-    We have discussed the problem with highly connected data and long searches, but how does the graph database solve this issue? The key here is that we will sooner or later find out that with more data comes more time spent on the same select with a growing relational database. This behavior is due to numerous reasons, but the main one is that we are bound to make more costly joins with more extensive tables. Our search will be over the same part of the graph with a graph database no matter what happens with the rest. Execution times will therefore be the same.
+    We have discussed the problem with highly connected data and long searches, but how does the graph database solve this issue?
+    The key here is that we will sooner or later find out that with more data comes more time spent on the same select with a growing relational database.
+    This behaviour is due to numerous reasons, but the main one is that we are bound to make more costly joins with more extensive tables.
+    Our search will be over the same part of the graph with a graph database no matter what happens with the rest. Execution times should therefore be the same.
 
     \section{How to use graph databases with object-oriented languages?}
 
     In most applications that communicate with a database, developers use an \acrshort{orm} to create objects from the database.
-    This is a widespread way to use databases, and it is effortless to use. It creates an abstraction between the object-oriented language and \acrshort{sql}, thus developers
-    do not need a deep knowledge of \acrshort{sql} to use it.
+    This is a widespread way to use databases, and it is effortless to use. It creates an abstraction between the object-oriented language and \acrshort{sql}, thus developers do not need a deep knowledge of \acrshort{sql} to use it.
 
     \acrshort{orm}'s are powerful, but they are used only with relational databases, which is understandable given that \acrshort{orm} stands for Object-Relational Mapper.
-    If we would like to use a mapper between a graph database and an object-oriented language, we would call it an \acrfull{ogm}. These types of mappers are not
-    as widespread as \acrshort{orm}s are.
+    If we would like to use a mapper between a graph database and an object-oriented language, we would call it an \acrfull{ogm}. These types of mappers are not as widespread as \acrshort{orm}s are.
 
-    In this paper, we will go through steps of creating such mapper, from studying graph databases and their query languages, through looking at similar solutions, namely EntityFramework,
-    to implementation of our solution with proper testing.
+    In this paper, we will go through the steps of creating the \acrshort{ogm} library for \CS.
+    We will start by studying graph databases and their query languages, studying similar solutions, namely EntityFramework, and end with our design and implementation of the library with proper testing.
 
 \end{introduction}

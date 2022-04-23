@@ -1,6 +1,6 @@
 \chapter {Design of OGM library}
 
-We should now have all information we need to propose our solution for OGM using the C\# language.
+We should now have all information we need to propose our solution for OGM using the \CS language.
 Before we start to analyze individual pieces of the library needed for its proper function, we need a list of requirements.
 
 The solution should be able to:
@@ -42,7 +42,7 @@ If we want to correctly translate queries from the object paradigm into Cypher, 
 
 What we are trying to do is create metadata. To build metadata, we first need information, which assemblies contain models representing nodes and relationships in a graph. A developer must declare these assemblies as it is necessary to limit the scope that will be scanned using reflection.
 
-The solutions we analyzed in the previous chapter are internally working very similarly. Both are scanning assemblies or packages on initialization (Java uses packages vs. C\# uses assemblies/namespaces), and we will borrow some of the features from these solutions into ours.
+The solutions we analyzed in the previous chapter are internally working very similarly. Both are scanning assemblies or packages on initialization (Java uses packages vs. \CS uses assemblies/namespaces), and we will borrow some of the features from these solutions into ours.
 Developers of our library will need to define a set of assemblies. During the initialization of our library, we will scan these assemblies and create a metadata object with information about the user-defined graph.
 
 \subsection {Annotations}
@@ -51,7 +51,7 @@ To create a metadata object, we need to identify and process nodes and relations
 
 We already have a solution to this problem, and Neo4j also uses it to solve the same issue. We will use annotations using attributes. Using these annotations, we can describe nodes and their relationships.
 
-We will look for these annotations during initialization using reflection, which is well supported by C\# and .NET. With annotation, we can describe the graph and create the metadata object.
+We will look for these annotations during initialization using reflection, which is well supported by \CS and .NET. With annotation, we can describe the graph and create the metadata object.
 
 \subsection {Entity mapper}
 
