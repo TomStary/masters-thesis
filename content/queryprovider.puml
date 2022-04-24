@@ -27,6 +27,8 @@ class "DbSet"<TEntity> {
 
 class OGMIQueryableExtensions <<static>> {
     + {static} FirstOrDefaultAsync(query:IQueryable<TSource>, predicate:Expression<Func<TSource, bool>>) : Task<TSource?>
+    + {static} <<async>> ToListAsync(source:IQueryable<TSource>) : Task<List<TSource>>
+    + {static} AsAsyncEnumerable(source:IQueryable<TSource>) : IAsyncEnumerable<TSource>
 }
 
 DbSet -[hidden]-> OGMIQueryableExtensions

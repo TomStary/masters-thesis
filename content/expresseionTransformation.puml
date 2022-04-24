@@ -12,6 +12,7 @@ state Processing {
     [*] --> QueryRootExpression
     QueryRootExpression --> ShapedQueryExpression
     Processing --> Translation
+    ShapedQueryExpression : Contains custom expression tree
 }
 
 state Translation {
