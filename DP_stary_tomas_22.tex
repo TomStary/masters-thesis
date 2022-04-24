@@ -50,17 +50,17 @@
 
 \department{Department of software engineering}
 \title{ORM Library for Neo4j Graph Database in .NET Framework}
-\authorGN{} %author's given name/names
+\authorGN{Tomáš} %author's given name/names
 \authorFN{Starý} %author's surname
-\author{Tomáš} %author's name without academic degrees
+\author{Tomáš Starý} %author's name without academic degrees
 \authorWithDegrees{Bc. Tomáš Starý} %author's name with academic degrees
 \supervisor{Ing. Marek Skotnica}
-\acknowledgements{THANKS (remove entirely in case you do not with to thank anyone)}
-\abstractEN{Summarize the contents and contribution of your work in a few sentences in English language.}
-\abstractCS{V n{\v e}kolika v{\v e}t{\' a}ch shr{\v n}te obsah a p{\v r}{\' i}nos t{\' e}to pr{\' a}ce v {\v c}esk{\' e}m jazyce.}
+\acknowledgements{My thanks go to my supervisor Ing. Marek Skotnica, for his support and guidance. I would also like to thank everyone I bothered with the subject of this thesis - thank you, my rubber ducks.}
+\abstractEN{\input{content/abstract_en.tex}}
+\abstractCS{\input{content/abstract_cs.tex}}
 \placeForDeclarationOfAuthenticity{Prague}
-\keywordsCS{Replace with comma-separated list of keywords in Czech.}
-\keywordsEN{Replace with comma-separated list of keywords in English.}
+\keywordsCS{Entity Framework, grafové databáze, ORM, OGM, Neo4j, .NET, .NET core}
+\keywordsEN{Entity Framework, graph databases, Neo4j,  ORM, OGM, .NET, .NET core}
 \declarationOfAuthenticityOption{4} %select as appropriate, according to the desired license (integer 1-6)
 \website{https://github.com/TomStary/masters-thesis} %optional thesis URL
 
@@ -111,14 +111,15 @@
 
 \begin{figure}
     \dirtree{%
-        .1 readme.txt\DTcomment{the file with CD contents description}.
-        .1 exe\DTcomment{the directory with executables}.
-        .1 src\DTcomment{the directory of source codes}.
-        .2 wbdcm\DTcomment{implementation sources}.
-        .2 thesis\DTcomment{the directory of \LaTeX{} source codes of the thesis}.
+        .1 README.txt\DTcomment{the file with CD contents description}.
+        .1 dotnet-neo4j-ogm\DTcomment{the project's source code directory}.
+        .2 src\DTcomment{the directory of source codes}.
+        .3 Neo4j.OGM\DTcomment{the project's implementation}.
+        .2 tests\DTcomment{the directory of tests}.
+        .3 Neo4j.OGM.Tests\DTcomment{the project's tests}.
         .1 text\DTcomment{the thesis text directory}.
         .2 thesis.pdf\DTcomment{the thesis text in PDF format}.
-        .2 thesis.ps\DTcomment{the thesis text in PS format}.
+        .1 text-src\DTcomment{the thesis text source directory}.
     }
 \end{figure}
 

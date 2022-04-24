@@ -440,13 +440,13 @@ sp\^ osobom, ktor\'y nezni\v zuje hodnotu Diela (vr\'atane komer\v cn\'eho vyu\v
 	\thispagestyle{empty}
 
 	~
-	
+
 	\vfill
-		
+
 	\if@declarationOptionSelected
 		\if\@lang1\chapterstyletitle{Prohl{\' a}{\v s}en{\' i}}\else\if\@lang2\chapterstyletitle{Prehl{\' a}senie}\else\chapterstyletitle{Declaration}\fi\fi\thedeclarationofauthenticity{}
-		
-		\vspace{2cm}
+
+		\vfill
 
 		\noindent
 			\if@cityfordeclarationdefined
@@ -505,7 +505,7 @@ sp\^ osobom, ktor\'y nezni\v zuje hodnotu Diela (vr\'atane komer\v cn\'eho vyu\v
 		\ClassError{FITthesis}{Czech keywords unspecified}{Specify the keywords in Czech of your thesis using \keywordsCS command.}
 	\fi
 
-	\vfil
+	\pagebreak
 
 	\if@abstractendefined
 		\chapterstyletitle{Abstract}\theabstracten
@@ -555,10 +555,6 @@ sp\^ osobom, ktor\'y nezni\v zuje hodnotu Diela (vr\'atane komer\v cn\'eho vyu\v
 
 	\cleardoublepage
 	\listoflistings
-
-	% TODO: Delete before release ;)
-	\cleardoublepage
-	\listoftodos
 
 	\pagestyle{ruled}
 	\mainmatter
