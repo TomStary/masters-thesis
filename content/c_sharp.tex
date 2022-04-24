@@ -17,7 +17,7 @@ The machine's processor can then read machine code. Using \acrshort{cil} and \ac
 \section {.NET}
 
 \textbf{.NET} is a framework written for \CS\ and other languages such as F\# and Visual Basic, which Microsoft also develops.
-In their own words: ".NET is an open-source developer platform, created by Microsoft, for building many different types of applications." \cite{noauthor_what_nodate-2}
+In their own words: ".NET is an open-source developer platform, created by Microsoft, for building many different types of applications." \cite{microsoft_what_nodate}
 
 To compile a library or program with a .NET framework, developers must first download and install a .NET \acrfull{sdk}.
 .NET \acrfull{sdk} is either a standalone \acrfull{cli} tool or embedded inside an \acrshort{ide}, for example, in Visual Studio from Microsoft.
@@ -35,7 +35,7 @@ This metadata is stored in the program's memory and accessible at runtime.
 For example, the following class:
 
 \begin{listing}[H]
-    \begin{minted}[
+	\begin{minted}[
  frame=lines,
  framesep=2mm,
  baselinestretch=1,
@@ -50,13 +50,13 @@ For example, the following class:
  public int Age { get; set; }
  }
 \end{minted}
-    \caption{Person class with a \texttt{Key} attribute}
+	\caption{Person class with a \texttt{Key} attribute}
 \end{listing}
 
 If we would want to know if the class does contain a field with KeyAttribute annotation, we could use the following code \ref{code:HasKeyAttribute} to get the MemberInfo instance:
 
 \begin{listing}[H]
-    \begin{minted}[
+	\begin{minted}[
  frame=lines,
  framesep=2mm,
  baselinestretch=1,
@@ -72,8 +72,8 @@ If we would want to know if the class does contain a field with KeyAttribute ann
                                     .Any());
  }
  \end{minted}
-    \caption{The example of using reflection}
-    \label{code:HasKeyAttribute}
+	\caption{The example of using reflection}
+	\label{code:HasKeyAttribute}
 \end{listing}
 
 We would use this code in cases where we do not know how an object is implemented.

@@ -9,18 +9,18 @@ In this chapter, we will study this library and conclude its relevance for our g
 Neo4j company has already created an \acrshort{ogm} for their \acrshort{dbms}.
 It supports dynamic objects and maps nodes and their relations into the domain model written in Java.
 
-The list of features from the official documentation: \cite{noauthor_neo4j_nodate-1}
+The list of features from the official documentation: \cite{neo4j_neo4j_nodate}
 \begin{itemize}
-    \item Object graph mapping of annotated node- and relationship-entities
-    \item Neo4jSession for direct interaction with Neo4j
-    \item Fast class metadata scanning
-    \item Optimized management of data loading and change tracking for minimal data transfers
-    \item Multiple transports: binary (bolt), \acrshort{http} and embedded
-    \item Persistence lifecycle events
-    \item Query result projection to data transfer objects (\acrshort{dto})
+	\item Object graph mapping of annotated node- and relationship-entities
+	\item Neo4jSession for direct interaction with Neo4j
+	\item Fast class metadata scanning
+	\item Optimized management of data loading and change tracking for minimal data transfers
+	\item Multiple transports: binary (bolt), \acrshort{http} and embedded
+	\item Persistence lifecycle events
+	\item Query result projection to data transfer objects (\acrshort{dto})
 \end{itemize}
 
-The following sections are information obtained from the official documentation of Neo4j-\acrshort{ogm} for Java. \cite{noauthor_reference_nodate}
+The following sections are information obtained from the official documentation of Neo4j-\acrshort{ogm} for Java. \cite{neo4j_reference_nodate}
 
 \subsection {Neo4j drivers}
 
@@ -49,7 +49,7 @@ The directions are either \texttt{INCOMING}, \texttt{OUTGOING}, or \texttt{UNDIR
 Relationships in a graph database can have properties assigned to them. Neo4j-\acrshort{ogm} supports this feature using an (\acrshort{pojo}) with annotation\linebreak\texttt{@RelationshipEntity}.
 
 A String attribute called "type" is available on the \texttt{@RelationshipEntity} annotation to control the relationship type.
-Like the simple strategy for labelling node entities, if "type" is not provided, the class's name derives from the relationship type, although it is converted into a snake case with an upper casing to honour the naming conventions Neo4j relationships. \cite{noauthor_reference_nodate}
+Like the simple strategy for labelling node entities, if "type" is not provided, the class's name derives from the relationship type, although it is converted into a snake case with an upper casing to honour the naming conventions Neo4j relationships. \cite{neo4j_reference_nodate}
 
 Inside the entity, we then define \texttt{@StartNode} and \texttt{@EndNode} annotations.
 In referenced entities, we also define a reference to the related entity and use \texttt{@Relationship} annotation with the same type as is in \texttt{@RelationshipEntity} annotation.
@@ -57,7 +57,7 @@ In referenced entities, we also define a reference to the related entity and use
 In the code example \ref{listing:1} is a simple example of using \texttt{@RelationshipEntity}.
 
 \begin{listing}[!ht]
-    \begin{minted}
+	\begin{minted}
  [
  frame=lines,
  framesep=2mm,
@@ -85,8 +85,8 @@ public class Movie {
  private String title;
 }
  \end{minted}
-    \caption{An example of model with relationship entity}
-    \label{listing:1}
+	\caption{An example of model with relationship entity}
+	\label{listing:1}
 \end{listing}
 
 \subsection {Indexes}
@@ -100,28 +100,28 @@ This library also supports composite indexes and node constraints\linebreak with
 
 \texttt{@Required} is an existence constraint. "It is possible to annotate properties in both node and relationship entities.
 For node entities the label of declaring class is used to create the constraint.
-For relationship entities the relationship type is used - such type must be defined on leaf class." \cite{noauthor_reference_nodate}
+For relationship entities the relationship type is used - such type must be defined on leaf class." \cite{neo4j_reference_nodate}
 
-The library can handle creating and managing indexes or constraints, but as stated in the documentation \cite{noauthor_reference_nodate}, this feature should be used only for development and not in production. That is why this feature is, by default, turned off.
+The library can handle creating and managing indexes or constraints, but as stated in the documentation \cite{neo4j_reference_nodate}, this feature should be used only for development and not in production. That is why this feature is, by default, turned off.
 
 These are the available modes for managing indexes and constraints:
 \begin{table}[H]
-    \begin{center}
-        \begin{tabularx}{\textwidth}{|c|p{0.83\textwidth}|}
-            \hline
-            node     & Default, nothing is done on the side of the OGM library.                                  \\
-            \hline
-            validate & This ensures that all constraints and indexes are in the database before starting up.     \\
-            \hline
-            assert   & This drops all indexes on startup and then creates only these defined by OGM annotations. \\
-            \hline
-            update   & Update indexes and constraints based on annotations.                                      \\
-            \hline
-            dump     & Dumps all indexes and constraints to a file.                                              \\
-            \hline
-        \end{tabularx}
-        \caption{Available modes for indexes and constraints}
-    \end{center}
+	\begin{center}
+		\begin{tabularx}{\textwidth}{|c|p{0.83\textwidth}|}
+			\hline
+			node     & Default, nothing is done on the side of the OGM library.                                  \\
+			\hline
+			validate & This ensures that all constraints and indexes are in the database before starting up.     \\
+			\hline
+			assert   & This drops all indexes on startup and then creates only these defined by OGM annotations. \\
+			\hline
+			update   & Update indexes and constraints based on annotations.                                      \\
+			\hline
+			dump     & Dumps all indexes and constraints to a file.                                              \\
+			\hline
+		\end{tabularx}
+		\caption{Available modes for indexes and constraints}
+	\end{center}
 \end{table}
 
 \subsection{Sessions}

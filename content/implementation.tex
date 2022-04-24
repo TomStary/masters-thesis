@@ -62,7 +62,7 @@ Implementation of \texttt{SessionFactory} is simple, we create a class with cons
 Using the first two parameters, we can create \texttt{IDriver} instance, which will be used to create session instances. The third parameter is special
 because the type of the parameter is prefixed with keyword \texttt{params}. It means we can call the constructor with as many instances of \texttt{Assembly} as we want
 (we are limited only by language itself, which has a cap at $2^{14}$ parameters). From \CS\ documentation:
-"No additional parameters are permitted after the \texttt{params} keyword in a method declaration, and only one params keyword is permitted in a method declaration." \cite{billwagner_params_nodate}
+"No additional parameters are permitted after the \texttt{params} keyword in a method declaration, and only one params keyword is permitted in a method declaration." \cite{wagner_params_nodate}
 
 The assemblies refer to where domain models are located;
 we need from the client's code information which assemblies to scan using reflection to pick up classes representing nodes and relationships.
@@ -132,7 +132,7 @@ internal static bool HasRelationshipEntityAttribute(this Type type)
 
 Keen reader might caught it up, but in the last code example \ref{code:typeextensions} we used the keyword \texttt{internal}
 as an access modifier to the defined methods. This access modifier makes methods, classes, and properties available only inside the assembly. More on this subject
-can be read in the official documentation of \CS\ language \cite{billwagner_internal_nodate}.
+can be read in the official documentation of \CS\ language \cite{wagner_internal_2022}.
 
 \subsection {Building schema}
 

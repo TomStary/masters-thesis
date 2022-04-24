@@ -11,10 +11,10 @@ We can identify two entities with relations between them.
 In a relational database, it would look like this.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{content/thesis-db.png}
-    \caption{Relational database for social network}
-    \label{fig:relscheme}
+	\centering
+	\includegraphics[width=0.5\textwidth]{content/thesis-db.png}
+	\caption{Relational database for social network}
+	\label{fig:relscheme}
 \end{figure}
 
 From the schema in figure \ref{fig:relscheme}, we can see that we need four tables and five foreign keys to describe all relations between two identified entities.
@@ -23,7 +23,7 @@ For example, we could ask who follows followers who liked someone's post.
 The query for this example would look like the example in code \ref{code:followers_of_followers_liked}.
 
 \begin{listing}[H]
-    \begin{minted}
+	\begin{minted}
  [
  frame=lines,
  framesep=2mm,
@@ -41,8 +41,8 @@ JOIN "user" followers_of_followers_data ON followers_of_followers.id_follower = 
 WHERE post.id = :post_id
 ORDER BY followers_of_followers_data.name;
  \end{minted}
-    \caption{SQL query for getting followers of users who liked a post}
-    \label{code:followers_of_followers_liked}
+	\caption{SQL query for getting followers of users who liked a post}
+	\label{code:followers_of_followers_liked}
 \end{listing}
 
 The query in code \ref{code:followers_of_followers_liked} is complex and hard to read. However, the main problem is performance.
@@ -52,10 +52,10 @@ This increase in execution time will happen regardless of the change in the actu
 Now, we compare the same problem solved using a graph database.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{content/graph_example.png}
-    \caption{Graph database for social network}
-    \label{fig:graphscheme}
+	\centering
+	\includegraphics[width=0.8\textwidth]{content/graph_example.png}
+	\caption{Graph database for social network}
+	\label{fig:graphscheme}
 \end{figure}
 
 The figure \label{fig:graphscheme} is the schema from the Neo4j database.
@@ -64,7 +64,7 @@ Furthermore, the answer to our question from the beginning is already visible. T
 To get the answer, we can follow the path in the graph, and as we are going to discover in a moment, the query to get this information also follows this path.
 
 \begin{listing}[H]
-    \begin{minted}
+	\begin{minted}
  [
  frame=lines,
  framesep=2mm,
@@ -75,8 +75,8 @@ To get the answer, we can follow the path in the graph, and as we are going to d
  ] {cypher}
  MATCH (:Post {id: {post_id}})-[:LIKES]->(:User)-[:FOLLOWS]->(followers:User) RETURN (followers);
  \end{minted}
-    \caption{Cypher query for getting followers of followers who liked a post}
-    \label{code:cypherQuery}
+	\caption{Cypher query for getting followers of followers who liked a post}
+	\label{code:cypherQuery}
 \end{listing}
 
 As promised, the query in the example \ref{code:cypherQuery} should not be hard to understand.
@@ -108,9 +108,9 @@ The solution to this problem is to write fully \acrshort{acid}-compliant transac
 
 \section{Neo4j}
 
-Neo4j is a graph database management system developed by Neo4j, Inc. \cite{noauthor_company_nodate}
+Neo4j is a graph database management system developed by Neo4j, Inc. \cite{neo4j_company_nodate}
 Neo4j is a native graph database and \acrshort{acid}-compliant.
-Besides \acrshort{dbms}, the Neo4j company created a custom query language for graph databases called Cypher. \cite{noauthor_neo4j_nodate-2}
+Besides \acrshort{dbms}, the Neo4j company created a custom query language for graph databases called Cypher. \cite{neo4j_neo4j_nodate}
 
 \section{Cypher}
 
@@ -157,21 +157,21 @@ Properties are name-value pairs providing additional detail. To represent them i
 Below is two examples of this usage, one for node and the other for relationship.
 
 \begin{itemize}
-    \item {Node property: \texttt{(u:User \{ nickname: 'mr. Incognito' \} )}}
-    \item {Relationship property: \\\texttt{-[rel:AUTHOR \{ posted: 2022-02-05T12:12:20Z \} ]}}
+	\item {Node property: \texttt{(u:User \{ nickname: 'mr. Incognito' \} )}}
+	\item {Relationship property: \\*\texttt{-[rel:AUTHOR \{ posted: 2022-02-05T12:12:20Z \} ]}}
 \end{itemize}
 
 \subsection{Querying with Cypher}
 
-Cypher has few words reserved for specific actions called keywords like most other programming languages. \cite{noauthor_querying_nodate}
+Cypher has few words reserved for specific actions called keywords like most other programming languages. \cite{neo4j_querying_nodate}
 First, look at the two most common keywords:
 \begin{itemize}
-    \item {\texttt{MATCH}: This keyword is what searches for an existing node, relationship, label, property, or pattern in the database.
-          \texttt{MATCH} does work similarly to the \texttt{SELECT} in \acrshort{sql}.}
-    \item {\texttt{RETURN}: The \texttt{RETURN} keyword defines what values or results we want to retrieve from the database.
-          It is used mainly in search queries as it is not required to be used during writing procedures.
-          \texttt{RETURN} does utilize the node and relationship variables. If we want to return any results from defined \texttt{MATCH},
-          we must specify which nodes, relationships, properties, or patterns we want to return.}
+	\item {\texttt{MATCH}: This keyword is what searches for an existing node, relationship, label, property, or pattern in the database.
+	      \texttt{MATCH} does work similarly to the \texttt{SELECT} in \acrshort{sql}.}
+	\item {\texttt{RETURN}: The \texttt{RETURN} keyword defines what values or results we want to retrieve from the database.
+	      It is used mainly in search queries as it is not required to be used during writing procedures.
+	      \texttt{RETURN} does utilize the node and relationship variables. If we want to return any results from defined \texttt{MATCH},
+	      we must specify which nodes, relationships, properties, or patterns we want to return.}
 \end{itemize}
 
 \subsection{Create, update, and delete operations}
@@ -180,10 +180,10 @@ Besides queries, a proper database system must have methods to create, update or
 
 The function \texttt{CREATE} is used to insert new data into a database.
 Using \texttt{CREATE}, we can create nodes, relationships, and also patterns.
-Below are some examples (\ref{code:create_user}, \ref{code:create_relationship}) of how \texttt{CREATE} is used. \cite{noauthor_updating_nodate}
+Below are some examples (\ref{code:create_user}, \ref{code:create_relationship}) of how \texttt{CREATE} is used. \cite{neo4j_updating_nodate}
 
 \begin{listing}[H]
-    \begin{minted}
+	\begin{minted}
  [
  frame=lines,
  framesep=2mm,
@@ -195,15 +195,15 @@ Below are some examples (\ref{code:create_user}, \ref{code:create_relationship})
  CREATE (u:User {nickname: "mr. Incognito"})
  RETURN u
  \end{minted}
-    \caption{Create a new user with a nickname}
-    \label{code:create_user}
+	\caption{Create a new user with a nickname}
+	\label{code:create_user}
 \end{listing}
 
 In the following example \ref{code:create_relationship}, we will use \texttt{MATCH} to create a relationship between two nodes.
 If we used the \texttt{CREATE} keyword for creating the relationship without the \texttt{MATCH}, we would introduce duplicities of both nodes.
 
 \begin{listing}[H]
-    \begin{minted}
+	\begin{minted}
  [
  frame=lines,
  framesep=2mm,
@@ -216,8 +216,8 @@ If we used the \texttt{CREATE} keyword for creating the relationship without the
  MATCH (p:Post {title: "Hello, world!"})
  CREATE (u)<-[:AUTHOR]-(p)
  \end{minted}
-    \caption{Create a new relationship between two nodes}
-    \label{code:create_relationship}
+	\caption{Create a new relationship between two nodes}
+	\label{code:create_relationship}
 \end{listing}
 
 There is another way to create this relationship, and we will look at it later in this chapter.
@@ -226,7 +226,7 @@ To update data in the database, Cypher uses the \texttt{SET} keyword, which can 
 
 If we want to delete a node or relationship, we use the \texttt{DELETE} keyword.
 This is similar to how \acrshort{sql} \texttt{DELETE} works, but with one exception. If a node is in a relationship
-with another node, we cannot delete it because it would create an inconsistent graph, with a potential relationship pointing to nothing. \cite{noauthor_updating_nodate}
+with another node, we cannot delete it because it would create an inconsistent graph, with a potential relationship pointing to nothing. \cite{neo4j_updating_nodate}
 We could run two queries to delete the relationship and delete the node itself, but there is a more straightforward solution.
 We can use \texttt{DETACH DELETE}, which does detach all relationships from the node before deleting it.
 
@@ -234,19 +234,19 @@ We can use \texttt{DETACH DELETE}, which does detach all relationships from the 
 \acrshort{orm} stands for an object-relational mapper based on the object-relational mapping concept.
 Object-relational mapping is the idea of writing queries using the object-oriented paradigm.
 There are some limitations to what \acrshort{orm} can accomplish.
-Developers should always consider these limits before using an \acrshort{orm} framework. \cite{mario_hoyos_what_2018}
+Developers should always consider these limits before using an \acrshort{orm} framework. \cite{hoyos_what_2018}
 
 \noindent Pros:
 \begin{itemize}
-    \item There is no need to use a second language during software development, \acrshort{sql} is a powerful language, but most developers do not use it too often.
-    \item \acrshort{orm} abstracts away from the database system.
-    \item It can lead to better performance than writing queries by ourselves.
+	\item There is no need to use a second language during software development, \acrshort{sql} is a powerful language, but most developers do not use it too often.
+	\item \acrshort{orm} abstracts away from the database system.
+	\item It can lead to better performance than writing queries by ourselves.
 \end{itemize}
 Cons:
 \begin{itemize}
-    \item If a developer is an \acrshort{sql} power user, he can write queries that will have better performance.
-    \item Developers have to learn how to use \acrshort{orm} properly.
-    \item Developers still need to know how \acrshort{orm} works under the hood.
+	\item If a developer is an \acrshort{sql} power user, he can write queries that will have better performance.
+	\item Developers have to learn how to use \acrshort{orm} properly.
+	\item Developers still need to know how \acrshort{orm} works under the hood.
 \end{itemize}
 
 Using the term \acrshort{orm} with graph databases is not correct. The proper term would be \acrshort{ogm} (object-graph mapper),

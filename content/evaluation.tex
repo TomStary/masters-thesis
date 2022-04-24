@@ -1,9 +1,9 @@
 \chapter{Evaluation of the project}
 
-We will now evaluate our project, we can divide this evalutation into three parts.
+We will now evaluate our project. We can divide this evaluation into three parts.
 
 The first part is the evaluation of our design of the OGM library. The design was inspired by both the Ne4oj-\acrshort{ogm} for Java implementation and the Entity Framework.
-The result is a working design of the library, but with some limitations which should be addressed in future development, namely the lack of the change tracker.
+The result is a library design, but with some limitations that should be addressed in future development, namely the lack of the change tracker.
 
 The second part of this evaluation is the implementation of a proof-of-concept for the design.
 We set two goals for the proof-of-concept:
@@ -11,39 +11,37 @@ We set two goals for the proof-of-concept:
     \item {Create or update nodes in a database}
     \item {Map LINQ to Cypher}
 \end{itemize}
-These two goals we achieved but during the implementation we noticed the missing change tracker, which severely limits the functionality of the library.
+We achieved these two goals, but we noticed the missing change tracker during the implementation, which severely limits the library's functionality.
 
-The first goal was achieved, with the help of already existing implementation in Java. Parts of the code were translated from Java to \CS\ with some changes to reflect the best practices.
+The first goal was achieved with the help of an already existing implementation in Java. Parts of the code were translated from Java to \CS\ with some changes to reflect the best practices.
 This allowed us to quickly develop the save mechanism for our library, although it was not the best solution.
 The problem with this solution is the different architecture of the library in the Java and .NET.
 In the .NET, we would greatly benefit from the ability to use dependency injection, which is not used in Java implementation.
-One thing we could also borrow from the Entity Framework is change tracker, this component of the Entity Framework gives us ability to track changes and save only the changes, it is also implemented using LINQ extensions.
-The extensions would be easy to implement, because we already have some basic functionality in the library.
+One thing we could also borrow from the Entity Framework is the change tracker. This component of the Entity Framework gives us the ability to track changes and save only the changes. It is also implemented using LINQ extensions.
+The extensions would be easy to implement because we already have some basic functionality in the library.
 
 The second goal was to use the LINQ to create Cypher queries for the Neo4j database.
-This goal was far more challinging to acomplish then the first one.
-We had to remap original expression tree into a new one, that could be translated into Cypher query and with the use of Neo4j driver for .NET executed and mapped to the objects.
-We acomplished this goal also with some limitations, but these limitations were more about the time and the size of the implementation itself than the problem with the design.
-The only missing part for this goal is the ability to correctly map relationship between objects and agregation methods.
+This goal was far more challenging to accomplish than the first one.
+We had to remap the original expression tree into a new one that could be translated into Cypher query, executed and mapped to the objects using Neo4j driver for .NET.
+We accomplished this goal with some limitations. These limitations were more about the time and size of the implementation itself than the problem with the design.
+The only missing part of this goal is to correctly map the relationship between objects and aggregation methods.
 
-
-The third part of this evaluation is the projects setup for contributors.
-This part is fully completed, we created a set of GitHub actions for our \acrshort{cicd}, prepared contributor's guide and release our library on NuGet repository feed.
-
+The third part of this evaluation is the projects set up for contributors.
+This part is fully completed. We created a set of GitHub actions for our \acrshort{cicd}, prepared a contributor's guide and released our library on the NuGet repository feed.
 
 \section{Next steps}
 
-We will propose next steps for this library, and also document them in the repository using issues. The next steps should be the following:
+We will propose the next steps for this library and document them in the repository using issues. The next steps should be the following:
 \begin{itemize}
     \item {Implement the change tracker.}
     \item {Refactor internal classes to use dependency injection.}
     \item {Implement the save operation with the use of the change tracker.}
     \item {Implement the mapping of the objects using LINQ like it is done in the Entity Framework.}
 \end{itemize}
-With these steps done, we could release our library as production ready and could be used in commercial projects.
+With these steps done, we could release our library as production-ready and could be used in commercial projects.
 
-One other thing is missing for this project and that is proper user oriented documentation.
+One other thing missing in this project is proper user-oriented documentation.
 As this is a proof-of-concept, we did not create any documentation for the library, except for the \texttt{README} file.
-However for the future development, there should be also a goal of creating proper documentation for the library.
+However, there should also be a goal of creating proper documentation for the library for future development.
 
-The author of this publication will pursue the next steps to finish the project even after finishing this publication.
+The author of this publication will pursue these steps to finish the project even after finishing this thesis.

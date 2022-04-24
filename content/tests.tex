@@ -10,8 +10,8 @@ In .NET framework are number of test frameworks that we can use, here is a list 
 
 \begin{itemize}
     \item {MSTest - Microsoft original test framework}
-    \item {NUnit - Originaly ported from JUnit \cite{noauthor_nunitorg_nodate}}
-    \item {xUnit - Created by author of the NUnit v2 \cite{noauthor_home_nodate}}
+    \item {NUnit - Originaly ported from JUnit \cite{poole_nunitorg_nodate}}
+    \item {xUnit - Created by author of the NUnit v2 \cite{net_foundation_home_nodate}}
 \end{itemize}
 
 Per the author's experience, we will use the xUnit framework, but \acrshort{tdd} can be done in any of them.
@@ -30,7 +30,7 @@ After refactoring is done, we check our tests and write new ones.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{content/Test-Driven-Development-activities.png}
-    \caption{Test-driven development diagram \cite{noauthor_continuous_2013}}
+    \caption{Test-driven development diagram \cite{madeyski_continuous_2013}}
     \label{fig:tddDiagram}
 \end{figure}
 
@@ -39,8 +39,8 @@ We will use the coverlet tool to calculate the coverage, a cross-platform covera
 It supports multiple output formats, but for our case, we will use \texttt{lcov} format, which can be then loaded by extension in Visual Studio Code and display coverage information directly in files.
 We can also generate a report of the coverage using these commands.
 \begin{itemize}
-    \item {\texttt{dotnet test \textbackslash\\
-              /p:CollectCoverage=true \textbackslash\\/p:CoverletOutput=../../lcov.info \textbackslash\\/p:CoverletOutputFormat=lcov}}
+    \item {\texttt{dotnet test \textbackslash\\*
+              /p:CollectCoverage=true \textbackslash\\*/p:CoverletOutput=../../lcov.info \textbackslash\\*/p:CoverletOutputFormat=lcov}}
     \item {\texttt{genhtml lcov.info -o ./CoverageReport/}}
 \end{itemize}
 The first command is to execute tests and generate \texttt{lcov.info} file, which contains coverage information. This file is also used by extension for Visual Studio Code
@@ -72,7 +72,7 @@ We want these assemblies to be mocked.
 
 What is mocking? "Mocking is a process used in unit testing when the unit being tested has external dependencies.
 The purpose of mocking is to isolate and focus on the code being tested and not on the behaviour or state of external dependencies.
-In mocking, the dependencies are replaced by closely controlled replacements objects that simulate the behaviour of the real ones." \cite{noauthor_mocking_nodate}
+In mocking, the dependencies are replaced by closely controlled replacements objects that simulate the behaviour of the real ones." \cite{progress_software_corporation_mocking_nodate}
 
 For our case, we will use a library for .NET called Moq, which is available as a NuGet package.
 More information about this package can be found at \url{https://github.com/moq/moq4}.
@@ -148,7 +148,7 @@ However, in xUnit, we are using only constructors, and \texttt{IDisposable} inte
 This approach has a limitation in not being able to perform asynchronous operations safely, but xUnit has a solution for this too.
 \texttt{IAsyncLifetime} is an interface from xUnit that provides the means to perform setup and cleanup methods asynchronously.
 
-Apart from setup and cleanup methods, xUnit also offers an ability to share context between tests, either in one class or across multiple classes using class fixtures or collection fixtures. More on this subject can be found in the official documentation of the xUnit framework. \cite{noauthor_home_nodate}
+Apart from setup and cleanup methods, xUnit also offers an ability to share context between tests, either in one class or across multiple classes using class fixtures or collection fixtures. More on this subject can be found in the official documentation of the xUnit framework. \cite{net_foundation_home_nodate}
 
 \section {Summary}
 
