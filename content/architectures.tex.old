@@ -1,6 +1,6 @@
 \chapter{Architectures \& design patterns}
 
-\todo{make it shorter and use it in the \CS chapter}
+\todo{make it shorter and use it in the \CS\ chapter}
 
 In this thesis, we will encounter a few architectures and design patterns. Before we do that, we should know what each of
 them stands for. This chapter will go through the most notable patterns and describe them.

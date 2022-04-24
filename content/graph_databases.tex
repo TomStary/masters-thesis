@@ -3,10 +3,10 @@
 The first thing we need to know about graph databases is their definition:
 "Graph databases store information in graphs, very similarly as relational databases store information in tables and have relations between columns in tables, graph databases store information in nodes and even on the edges, or as we should call them, relations." \cite{morgante_what_2021}
 
-To better show the power of graph databases, we will show it on a real-world example.
+To better show the power of graph databases, we will show it in a real-world example.
 Social networks dominate today's internet content, and everyone wants to be connected with his or her friends and relatives.
 In one of the social networks, we have people who can post their thoughts or opinions.
-Other users can follow them to see their posts, and like them.
+Other users can follow them to see their posts and like them.
 We can identify two entities with relations between them.
 In a relational database, it would look like this.
 
@@ -17,9 +17,10 @@ In a relational database, it would look like this.
     \label{fig:relscheme}
 \end{figure}
 
-From the schema in figure \ref{fig:relscheme}, we can see, we need four tables and five foreign keys to describe all relations between two identified entities.
+From the schema in figure \ref{fig:relscheme}, we can see that we need four tables and five foreign keys to describe all relations between two identified entities.
 This design can lead to costly joins to answer requests resulting from relationships between entities.
-For example, we could ask who follows followers who liked someone's post. The query for this example would look like the example in the code \ref{code:followers_of_followers_liked}.
+For example, we could ask who follows followers who liked someone's post.
+The query for this example would look like the example in code \ref{code:followers_of_followers_liked}.
 
 \begin{listing}[H]
     \begin{minted}
@@ -44,8 +45,9 @@ ORDER BY followers_of_followers_data.name;
     \label{code:followers_of_followers_liked}
 \end{listing}
 
-The query in the example \ref{code:followers_of_followers_liked} is complex and hard to read. However, the main problem is performance.
-As data ub the database will grow, the query execution time will be longer due to increasing size of the data needed to load, this increase of execution time will happen regardles of the change in the actual result.
+The query in code \ref{code:followers_of_followers_liked} is complex and hard to read. However, the main problem is performance.
+As data in the database grows, the query execution time will be longer due to the increasing size of the data needed to load.
+This increase in execution time will happen regardless of the change in the actual result.
 
 Now, we compare the same problem solved using a graph database.
 
@@ -56,9 +58,10 @@ Now, we compare the same problem solved using a graph database.
     \label{fig:graphscheme}
 \end{figure}
 
-In the figure \label{fig:graphscheme} is the schema from the Neo4j database, each node has one relation or more to other nodes.
+The figure \label{fig:graphscheme} is the schema from the Neo4j database.
+Each node has one relation or more to other nodes.
 Furthermore, the answer to our question from the beginning is already visible. The question was: who follows users that liked the post?
-To get the answer we can follow the path in the graph, and as we are going to discover in a moment, the query to get this information also follows this path.
+To get the answer, we can follow the path in the graph, and as we are going to discover in a moment, the query to get this information also follows this path.
 
 \begin{listing}[H]
     \begin{minted}
@@ -81,23 +84,22 @@ As promised, the query in the example \ref{code:cypherQuery} should not be hard 
 This small example was inspired by a blog post from Graham Cox, Introduction to Graph Databases. \cite{cox_introduction_2017}
 It is designed to show the strength of graph databases compared to relational databases.
 
-\section {Native vs. Non-native graph databases}
+\section {Native vs Non-native graph databases}
 
 When dealing with graph databases, we have to look at two main \acrshort{dbms} features: storage and processing.
 
 Storage is how graphs are stored in memory. If the storage is optimized for graphs, like having related nodes close together, we talk about native graph storage.
-When implementation uses other NoSQL storage, then they are called non-native graph storage.
+When implementation uses other NoSQL storage, they are called non-native graph storage.
 
 The second feature is processing, which refers to how graph databases process database operations.
 What is meant by that is how the database treats queries and how it handles storage.
 Native databases use Index-free adjacency for processing.
 \cite{chao_graph_2018}
 
-\textbf{Index-free adjacency}: "Native graphs take data that is logically connected via arcs or relationships and hard-wire the physical RAM addresses of these items into the node."
-\cite{mccreary_neighborhood_2021}
-This information should give the answer to why are graph databases are faster than other types of \acrshort{dbms} in searching related row/nodes/documents.
-In traditional \acrshort{rdbms}, looking up a row in another table means that we have to pull an index table representing this relation and then find a path to row in said table.
-This behavior leads to another problem in \acrshort{rdbms} because the database uses many indexes to keep data connected, which negatively impacts insert operations.
+\textbf{Index-free adjacency}: "Native graphs take data that is logically connected via arcs or relationships and hard-wire the physical RAM addresses of these items into the node." \cite{mccreary_neighborhood_2021}
+This information should answer to why are graph databases faster than other types of \acrshort{dbms} in searching related row, nodes or documents.
+In traditional \acrshort{rdbms}, looking up a row in another table means pulling an index table representing this relation and then finding a path to the row in said table.
+This behaviour leads to another problem in \acrshort{rdbms} because the database uses many indexes to keep data connected, which negatively impacts insert operations.
 
 One more thing we should go through is how the graph database handles writes. Connected data requires strict data integrity.
 Graph databases have to create or update nodes and relationships in one transaction; otherwise, this could result in a corrupted graph, which is almost impossible to fix.
@@ -106,14 +108,14 @@ The solution to this problem is to write fully \acrshort{acid}-compliant transac
 
 \section{Neo4j}
 
-Neo4j is a graph database management system, and is developed by Neo4j, Inc.. \cite{noauthor_company_nodate}
-Neo4j is a native graph database, and \acrshort{acid}-compliant.
-Besides \acrshort{dbms} Neo4j company created custom query language for graph databases called Cypher. \cite{noauthor_neo4j_nodate-2}
+Neo4j is a graph database management system developed by Neo4j, Inc. \cite{noauthor_company_nodate}
+Neo4j is a native graph database and \acrshort{acid}-compliant.
+Besides \acrshort{dbms}, the Neo4j company created a custom query language for graph databases called Cypher. \cite{noauthor_neo4j_nodate-2}
 
 \section{Cypher}
 
 \textbf{Cypher} is a query language created by Neo4j initially for their graph database.
-Nowadays, it is possible to use Cypher on other graph databases, using openCypher, which is open-source project for other graph \acrshort{dbms}. \cite{noauthor_resources_nodate}
+Nowadays, it is possible to use Cypher on other graph databases using openCypher, an open-source project for other graph \acrshort{dbms}. \cite{noauthor_resources_nodate}
 
 From Neo4j's documentation: Its philosophy is to be easily read and understood by developers, database professionals, and business stakeholders.
 Its ease of use derives from the fact that it is in accord with how we intuitively describe graphs using diagrams. \cite{robinson_graph_2015}
@@ -126,7 +128,7 @@ Parentheses were chosen because they look like circles, a standard visual repres
 If we need to refer to the node, we can give it a variable like \texttt{(u)} for a user or \texttt{(p)} for a post.
 In real-world queries, full names of variables should be used to understand the query better.
 
-With variables, we mentioned the possibility to give a variable name to the nodes, but how can we distinguish two nodes from one to the other.
+With variables, we mentioned the possibility of giving a variable name to the nodes, but how can we distinguish two nodes from one to the other.
 We can do this by assigning labels to each node. Labels are like tags or table names, which specify certain entities in the graph.
 If we look back to our example of users and posts, we already used the two labels: \texttt{(p:Post)} and \texttt{(u:User)}.
 
@@ -135,7 +137,7 @@ Specifying labels also has another benefit. When not using labels in a query, th
 
 \subsection{Relationships}
 
-Relationships are a representations of edges in a graph between nodes.
+Relationships are representations of edges in a graph between nodes.
 They are marked in Cypher using an arrow \texttt{-->} or \texttt{<--} between two nodes.
 Additional information, such as by which relationship type are two nodes connected and any properties of the relationship, can be placed in square brackets inside the arrow \texttt{((p:Post)-[:AUTHOR]->(u:User))}. \cite{noauthor_getting_nodate}
 
@@ -145,7 +147,7 @@ This syntax can make queries more flexible and not force users to know in which 
 The tradeoff is a small performance loss.
 
 Like with nodes, variables can be used to refer to relationships.
-If we do not need to reference the relationship later, we can leave any specification for relationship using two dashes (\texttt{--}).
+If we do not need to reference the relationship later. We can leave any specification for a relationship using two dashes (\texttt{--}).
 
 \subsection{Nodes and relationship properties}
 
@@ -193,12 +195,12 @@ Below are some examples (\ref{code:create_user}, \ref{code:create_relationship})
  CREATE (u:User {nickname: "mr. Incognito"})
  RETURN u
  \end{minted}
-    \caption{Create a new user with nickname}
+    \caption{Create a new user with a nickname}
     \label{code:create_user}
 \end{listing}
 
 In the following example \ref{code:create_relationship}, we will use \texttt{MATCH} to create a relationship between two nodes.
-If we would \texttt{CREATE} use for the relationship without the \texttt{MATCH}, we would introduce duplicities of both nodes.
+If we used the \texttt{CREATE} keyword for creating the relationship without the \texttt{MATCH}, we would introduce duplicities of both nodes.
 
 \begin{listing}[H]
     \begin{minted}
@@ -229,9 +231,10 @@ We could run two queries to delete the relationship and delete the node itself, 
 We can use \texttt{DETACH DELETE}, which does detach all relationships from the node before deleting it.
 
 \section{\acrshort{orm}}
-\acrshort{orm} stands for an object-relational mapper, which is based on the concept of object-relational mapping.
+\acrshort{orm} stands for an object-relational mapper based on the object-relational mapping concept.
 Object-relational mapping is the idea of writing queries using the object-oriented paradigm.
-There are some limitations of what \acrshort{orm} can accomplish. Developers should always consider these limits before using an \acrshort{orm} framework. \cite{mario_hoyos_what_2018}
+There are some limitations to what \acrshort{orm} can accomplish.
+Developers should always consider these limits before using an \acrshort{orm} framework. \cite{mario_hoyos_what_2018}
 
 \noindent Pros:
 \begin{itemize}
@@ -243,23 +246,23 @@ Cons:
 \begin{itemize}
     \item If a developer is an \acrshort{sql} power user, he can write queries that will have better performance.
     \item Developers have to learn how to use \acrshort{orm} properly.
-    \item Developers still need to know how does \acrshort{orm} works under the hood.
+    \item Developers still need to know how \acrshort{orm} works under the hood.
 \end{itemize}
 
-Using the term \acrshort{orm} with relation to graph databases is not correct. The proper term would be \acrshort{ogm} (object-graph mapper),
-but there are a few reasons why we are using \acrshort{orm} instead of \acrshort{ogm} in the name of this thesis. However, please make no mistake,
-when discussing \acrshort{orm} involving graph databases, it is, in fact, \acrshort{ogm}.
+Using the term \acrshort{orm} with graph databases is not correct. The proper term would be \acrshort{ogm} (object-graph mapper),
+but there are a few reasons why we are using \acrshort{orm} instead of \acrshort{ogm} in the name of this thesis.
+However, please make no mistake. When discussing \acrshort{orm} involving graph databases, it is, in fact, \acrshort{ogm}.
 The main reason is simple: \acrshort{orm} has been around for more than a decade, and developers are familiar with the concept and its challenges.
 
-The diferences between \acrshort{orm} and \acrshort{ogm} are mainly in the target \acrshort{dbms}. But they are not interchanable.
+The differences between \acrshort{orm} and \acrshort{ogm} are mainly in the target \acrshort{dbms}.
+They are not interchangeable, however.
 
 \section{Summary}
 
-In this chapter, we introduced graph databases and compared them to relational \acrshort{dbms}.
+This chapter introduced graph databases and compared them to relational \acrshort{dbms}.
 We compared the queries of both types of databases and their differences.
 We also studied the differences between native and non-native databases.
 
-The rest of this chapter was focused on Neo4j and Cypher language, where we introduced the basics of this language, like how are relationships and nodes defined,
-and base keywords used in Cypher.
+The rest of this chapter focused on Neo4j and Cypher language, where we introduced the basics of this language, like how relationships and nodes are defined and base keywords used in Cypher.
 
 In the end, we also adequately introduced the concept of \acrshort{orm} and its relation to \acrshort{ogm}.

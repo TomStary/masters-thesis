@@ -1,41 +1,36 @@
-\chapter {State of the art EntityFramework and .NET}
+\chapter {State of the art EntityFramework and .NET framework}
 
-If anyone wants to create \acrshort{orm} or \acrshort{ogm} for .NET in \CS, they should go through some principles that are used in
-EntityFramework and .NET. This chapter will go through some of these principles with insight into the technologies used.
-
-We will start with studying \CS and then .NET and LINQ, part of .NET. Then we will go through EntityFramework itself.
+If anyone wants to create \acrshort{orm} or \acrshort{ogm} for .NET in \CS, they should go through some principles that are used in EntityFramework and .NET framework.
+This chapter will go through these principles with insight into the technologies used.
 
 \section {\CS}
-\CS is a general-purpose, type-safe, object-oriented programming language, the goal of which is programmer productivity.
-To this end, the language balances simplicity, expressiveness,
-and performance. \cite{albahari_c_2019}
+\CS\ is a general-purpose, type-safe, object-oriented programming language, the goal of which is programmer productivity.
+To this end, the language balances simplicity, expressiveness, and performance. \cite{albahari_c_2019}
 
-Microsoft is developing and maintaining the \CS language. When writing this thesis, the current version of the \CS is \CS10.
+Microsoft has created and is developing the \CS\ language. When writing this thesis, the current version of the \CS\ is \CS10.
 
-The \CS code is statically compiled down to \acrlong{cil}. \acrshort{cil} cannot be run by itself on a machine.
-\acrshort{cil} runtime or \acrfull{clr} must be used. Using \acrfull{jit} compilation, \acrshort{clr} reads \acrshort{cil} and translates \acrshort{cil} to native
-code or sometimes called machine code. The machine's processor can then read machine code. Using \acrshort{cil} and \acrshort{clr} has benefits in running code
-cross-platform without recompiling code for different processors, at the cost of some performance. \cite{rodenburg_code_2021}
+The \CS\ code is statically compiled down to \acrlong{cil}. \acrshort{cil} cannot be run by itself on a machine.
+\acrshort{cil} runtime or \acrfull{clr} must be used.
+Using \acrfull{jit} compilation, \acrshort{clr} reads \acrshort{cil} and translates \acrshort{cil} to native code or sometimes called machine code.
+The machine's processor can then read machine code. Using \acrshort{cil} and \acrshort{clr} has benefits in running code cross-platform without recompiling code for different processors, at the cost of some performance. \cite{rodenburg_code_2021}
 
 \section {.NET}
 
-.NET is a framework written for \CS and other languages such as F\# and
-Visual Basic and Microsoft also develop them.
-In their own words: ".NET is an open-source developer
-platform, created by Microsoft, for building many different types of applications." \cite{noauthor_what_nodate-2}
+\textbf{.NET} is a framework written for \CS\ and other languages such as F\# and Visual Basic, which Microsoft also develops.
+In their own words: ".NET is an open-source developer platform, created by Microsoft, for building many different types of applications." \cite{noauthor_what_nodate-2}
 
-To compile a library or program with a .NET framework,
-developers must first download and install a .NET \acrfull{sdk}.
-.NET \acrfull{sdk} is either a standalone \acrfull{cli} tool or embedded inside an \acrshort{ide},
-for example, in Visual Studio from Microsoft.
+To compile a library or program with a .NET framework, developers must first download and install a .NET \acrfull{sdk}.
+.NET \acrfull{sdk} is either a standalone \acrfull{cli} tool or embedded inside an \acrshort{ide}, for example, in Visual Studio from Microsoft.
+
+One part of the .NET framework we will need for any mapper will be a reflection.
 
 \subsection{Reflection}
 
 The reflection pattern is used to access the class and its methods and fields. We can access the class and its methods and fields without knowing its implementation.
-This feature has to be supported by the programming language itself. For example, \CS supports reflection and is widely used in many popular libraries.
+This feature has to be supported by the programming language itself. For example, \CS\ supports reflection and is widely used in many popular libraries.
 
 Reflection works by scanning the program's implementations and creating metadata about the classes and methods.
-This metadata is stored in the program's memory and made accessible at runtime.
+This metadata is stored in the program's memory and accessible at runtime.
 
 For example, the following class:
 
@@ -55,9 +50,10 @@ For example, the following class:
  public int Age { get; set; }
  }
 \end{minted}
+    \caption{Person class with a \texttt{Key} attribute}
 \end{listing}
 
-If we would want to know if the class does contain a field with KeyAttribute annotation, we could use this next code to get the MemberInfo instance:
+If we would want to know if the class does contain a field with KeyAttribute annotation, we could use the following code \ref{code:HasKeyAttribute} to get the MemberInfo instance:
 
 \begin{listing}[H]
     \begin{minted}[
@@ -71,9 +67,13 @@ If we would want to know if the class does contain a field with KeyAttribute ann
  public bool HasKeyAttribute(Type type)
  {
  var members = type.GetMembers();
- return members.Any(member => member.GetCustomAttributes().OfType<EndNodeAttribute>().Any());
+ return members.Any(member => member.GetCustomAttributes()
+                                    .OfType<EndNodeAttribute>()
+                                    .Any());
  }
  \end{minted}
+    \caption{The example of using reflection}
+    \label{code:HasKeyAttribute}
 \end{listing}
 
 We would use this code in cases where we do not know how an object is implemented.
@@ -94,65 +94,56 @@ This feature is used in Entity Framework.
 
 \section {Entity Framework Core}
 
-With knowledge from previous sections of this chapter, we can now study Entity Framework.
+The Entity Framework is an \acrshort{orm} with the support of writing queries using LINQ expressions.
 
 When we are talking about Entity Framework, we are talking about the latest version of this framework, Entity Framework Core or EFCore, as it is known in the community.
 This version was released for .NET Core 1.0, the first Microsoft version of .NET purposely built for multiplatform use.
 
 To use Entity Framework, developers must add another dependency to their projects. This dependency is for Entity Framework and its called provider, which is used
-to provide connection and translation capabilities for Entity Framework to work correctly over a specific database.
+to provide connection and extend translation capabilities for Entity Framework to work correctly over a specific database.
 
-If we want to know how Entity Framework translates LINQ queries to SQL queries, we need to look at implementing any publicly available provider.
-In a perfect world, we would use the documentation for how to do it, but there is no current documentation at the time of writing.
-
-To study, we will choose a provider for the Postgresql database. There are two reasons why this provider. The first one is the author's experience with these providers, and the second one
-is because a third party created this provider.
-
-Complete code for this provider is available on the GitHub server at this URL: \url{https://github.com/npgsql/efcore.pg}.
-
-\subsection {Postgresql provider}
-
-Studying both provider and Entity Framework Core, we get an idea of how it works. EF Core is creating a base functionality, like providing interfaces and abstract classes to scan
-the expression tree for each query. It also provides interfaces for translators to translate the query to SQL. The provider is then implementing these interfaces and abstract classes.
-
-As we already know, an expression tree is created from individual expressions. Each expression accepts visitors, which are used to generate \acrshort{sql}.
-This expression tree is processed in
-\linebreak\texttt{QueryCompilationContext}.
+If we want to know how Entity Framework translates LINQ queries to SQL queries, we need to look at the implementation of the Entity Framework.
+The translation is separated into several parts, but the most important parts are implementations of the \texttt{QueryableMethodTranslatingExpressionVisitor}\linebreak class which translates the LINQ method into custom expression, and the \texttt{QuerySqlGenerator} which translates the expression into SQL.
+There are more expression visitors and generators, but these are the most important ones.
 
 \subsection {\texttt{DbSet}}
 
 An inseparable part of the Entity Framework Core is the \texttt{DbSet}. This class is used to query data from the database.
-The Entity Framework creates it, and it is an implementation of \texttt{IQueryable<T>} interface. This interface is the backbone of LINQ.
+The Entity Framework creates it, and it is an implementation of \texttt{IQueryable<T>} interface.
+This interface is the backbone of LINQ.
 
-With this abstract class, we can not only create queries to the database but also add or update entities to the change tracker.
-Change tracker is then used for saving operation, where it is checked what was changed were made and then they are saved to the database using \texttt{DbContext.SaveChanges} method
-or its asynchronous version \texttt{DbContext.SaveChangesAsync}.
+With this abstract class, we can create queries to the database and add or update entities to the change tracker.
+Change tracker is then used for saving operation, where it is checked what changes in objects were made and then they are saved to the database using \texttt{DbContext.SaveChanges} method or its asynchronous version \texttt{DbContext.SaveChangesAsync}.
 
-\texttt{DbSet} implements methods in both synchronous and asynchronous versions. The main benefit of asynchronous versions is that they are not blocking the thread. They are using \texttt{Task} to run the code in the background. This is done by using \texttt{async} keyword.
+\texttt{DbSet} implements methods in both synchronous and asynchronous versions.
+The main benefit of asynchronous versions is that they are not blocking the thread.
+They are using \texttt{Task} to run the code on another thread from a thread pool or outside of the application's thread pool if possible.
+This is done by using \texttt{async} keyword.
 
-One key aspect of queries not mentioned yet is that queries are generated using extension methods. Inside Entity Framework are declared extension methods that
-extends \texttt{IQueryable<T>} interface and \text{Expression} abstract class. These extension methods are responsible for generating predicates which are then translated to the \acrshort{sql}.
-To show these extensions, we will look at the example of implementation of \texttt{DbSet<T>.FindAsync} method.
+To show the exact process of generating a query from LINQ to SQL, we will go through the implementation of one of the methods in the \texttt{DbSet} class.
 
 \subsection{\texttt{FindAsync}}
 
-Before going into the implementation, we need to define what this method does. It is used to find an entity by its primary key or keys.
-If the key is not found, then it returns null, or to be more precise, it returns the default value of the object using keyword \texttt{default}.
+The \texttt{FindAsync} method is used to find an entity by its primary key. If the entity is not found, it returns \texttt{default} value for given object.
+It takes 1 to n parameters of type \texttt{object}. These parameters are mapped to the primary keys of the entity.
+If the number of parameters is not equal to the number of primary keys, the exception is thrown.
 
-\texttt{FindAsync} method does take 1 to n parameters of the type of object, and these parameters are key parameters of the entity we want to find, the entity,
-which we want to find is given by the type used when declaring the \texttt{DbSet<T>} instance in \texttt{DbContext} either by declaring public property inside \texttt{DbContext}
-or by using \texttt{DbContext.Set<T>} method.
+We are now going to analyze the implementation of the \texttt{FindAsync} method. The code for this method and the whole Entity Framework is available in the GitHub repository at \url{https://github.com/dotnet/efcore}.
 
-Inside \texttt{FindAsync} is then called a method defined by \texttt{IEntityFinder} interface with name \texttt{FindAsync}.
-The actual implementation is therefore hidden in the implementation of this implementation, which we can find inside the Entity Framework Core repository, which is available
-on the GitHub server.
+Inside the concrete implementation of the \texttt{DbSet<T>} abstract class the\linebreak \texttt{FindAsync} method call method from \texttt{IEntityFinder} inteface called\linebreak\texttt{FindAsync}.
+The \texttt{IEntityFinder.FindAsync} method is what starts the translation process of the query by creating the source LINQ query.
+The find method is used the \texttt{FirstOrDefaultAsync} method, which is equivalent to \texttt{FirstOrDefault} method in LINQ. This method accepts a lambda function as a predicate for the query.
+This predicate is build inside the \texttt{EntityFinder} class.
 
-An instance of \texttt{EntityFinder} that implements \texttt{IEntityFinder} is created internally and also contains the cache for already tracked and mapped entities.
-This cache is then checked to see if the entity we are trying to find is not already there. If it was the case, then the cached value is returned. Otherwise, a new query is created
-using \texttt{FirstOrDefaultAsync} method which is \texttt{IQueryable<T>} extension method defined in the Entity Framework Core.
+The \texttt{FirstOrDefaultAsync} is an extension method for \texttt{IQueryable} interface, and as the name suggests, it is used for retrieving the first element of a sequence or a default value if the sequence contains no elements.
+This extension method starts the process of translation and enumeration of the result from the database.
 
-Queries are created by creating a custom expression tree, which is then translated to \acrshort{sql}. This is done by various visitors visiting each expression
-in the expression tree. The goal is a transformation of LINQ queries into \acrshort{sql} ones and their evaluation.
+Translation of the query works by overriding the default provider for\linebreak\texttt{IQueryable} done insede the \texttt{DbSet<T>} abstract class. The custom provider is defined by the \texttt{IAsyncQueryProvider} interface.
+If we skip to the translation process itself, we will find ourselves in the \texttt{QueryCompilationCOntext} class inside, which is a method \texttt{CreateQueryExecutor}.
+This method is responsible for transforming the expression tree for our query. The process is divided into a few steps preprocessing, translating methods, and postprocessing.
+At the end of this method is the translation of the expression tree into a custom lambda function, which is used to execute the query, enumerate the result and return it.
+Each step of the translation process uses an implementation of the \texttt{ExpressionVisitor} abstract class with different overrides.
+
 
 \section {Summary}
 
