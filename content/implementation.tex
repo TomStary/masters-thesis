@@ -1,17 +1,18 @@
 \chapter {Implementation of proof-of-concept}
 
-With the solution analysis done, we can now start implementing proof-of-concept.
-Before we start the implementation, we should define the goals we want to accomplish in the proof-of-concept.
+With the library's design done, we can now start implementing proof-of-concept.
+In the beginning, we should define the goals we want to accomplish in the proof-of-concept.
 These are the goals:
 \begin{itemize}
     \item {Create or update nodes in a database}
     \item {Map LINQ to Cypher}
 \end{itemize}
 
-The main tools used are Visual Studio Code with multiple plugins like Copilot and \CS\ extension, which provides an IntelliSense.
+Before we start the implementation, we also need to introduce the tools used.
+The main tools used are Visual Studio Code with multiple plugins like Copilot and \CS\ extension.
 Github is used as VCS. Code is available at this URL \url{https://github.com/TomStary/dotnet-neo4j-ogm} or in the appendix of this thesis.
 
-To create a new project, we will use the following command in the terminal application: \texttt{dotnet new classlib} with parameters for the name of the project and others.
+To create a new project in .NET, we will use the following command in the terminal application: \texttt{dotnet new classlib} with a parameter for the name of the project.
 We also want to separate tests from the source code of the library, so we employ a file structure like this \ref{ref:fileStructure}.
 
 \begin{figure}[H]
@@ -20,7 +21,7 @@ We also want to separate tests from the source code of the library, so we employ
         .2 src.
         .3 {Neo4j.OGM}.
         .2 tests.
-        .3 {Neo4j.OGM}.
+        .3 {Neo4j.OGM.Tests}.
         .2 {.gitignore} .
         .2 {Neo4j.OGM.sln}.
     }
@@ -28,15 +29,15 @@ We also want to separate tests from the source code of the library, so we employ
     \label{ref:fileStructure}
 \end{figure}
 
-With the file structure prepared, we can begin our implementation. During the development of this
-library, we will use \acrfull{tdd}. We will not go deep into this approach in this chapter,
-as it will be described in the next chapter, but keep in mind that during development, \acrshort{tdd} was used as it is an excellent way to write and test libraries.
+With the file structure prepared, we can begin our implementation.
+During the development of this library, we will use \acrfull{tdd}.
+We will not go deep into this approach in this chapter, as it will be described in the next chapter, but keep in mind that during development, \acrshort{tdd} was used as it is an excellent way to develop libraries.
 
 \section {Common infrastructure}
 
 If we want to achieve set goals for proof-of-concept, we will need a common infrastructure like the implementation of \texttt{ISession} interface.
-This interface can be described as an entry point for all of our operations with the database. It will handle both saving entities and creating DbSet
-instances, which can be used to query over entities using LINQ.
+This interface can be described as an entry point for all of our operations with the database.
+It will handle both saving entities and creating \texttt{DbSet<T>} instances, which can be used to query over entities using LINQ.
 
 For the session to work properly, we need to have a few things:
 
@@ -45,10 +46,12 @@ For the session to work properly, we need to have a few things:
     \item domain metadata
 \end{itemize}
 
-The connection to a database and domain metadata can be acquired from the session's constructor or elsewhere. However,
-the best solution is to use \texttt{SessionFactory} instead. Using a factory has many benefits. The client's code will not be responsible for
-creating a connection to the database for each session instance. It will also have precalculated domain metadata. Another benefit is
-that it will be possible to hide the concrete implementation of \texttt{ISession} interface.
+The connection to a database and domain metadata can be acquired from the session's constructor.
+However, the best solution is to use \texttt{SessionFactory} instead.
+Using a factory has many benefits.
+The client's code will not be responsible for creating a connection to the database for each instance of the \texttt{Session} class.
+It will also have a cached domain metadata object.
+Another benefit is that it will be possible to hide the concrete implementation of \texttt{ISession} interface.
 
 Implementation of \texttt{SessionFactory} is simple, we create a class with constructor accepts three parameters:
 \begin{itemize}
@@ -61,8 +64,9 @@ because the type of the parameter is prefixed with keyword \texttt{params}. It m
 (we are limited only by language itself, which has a cap at $2^{14}$ parameters). From \CS\ documentation:
 "No additional parameters are permitted after the \texttt{params} keyword in a method declaration, and only one params keyword is permitted in a method declaration." \cite{billwagner_params_nodate}
 
-The assemblies refer to where domain models are located; we need from the client's code information which assemblies to scan using reflection to pick up classes
-representing nodes and relationships. We need this data for the correct graph analysis during saving operations.
+The assemblies refer to where domain models are located;
+we need from the client's code information which assemblies to scan using reflection to pick up classes representing nodes and relationships.
+We will use this information during building metadata objects.
 
 \subsection {Building metadata}
 
@@ -82,7 +86,7 @@ the domain model. We use these assemblies in \texttt{MetaData} class constructor
 /// MetaData constructor.
 /// </summary>
 /// <param name="assemblies">Assemblies containing domain model.</param>
-internal MetaData(params Assembly[] assemblies)
+public MetaData(params Assembly[] assemblies)
 {
  _domainInfo = new DomainInfo(assemblies);
  Schema = new SchemaBuilder(_domainInfo).Build();
@@ -92,11 +96,12 @@ internal MetaData(params Assembly[] assemblies)
     \label{code:metadataconstructor}
 \end{listing}
 
-We can now see how are the assemblies passed to the \texttt{DomainInfo} constructor, inside this class, we going through all the assemblies
-and scanning all classes obtained by the \texttt{Assembly.GetType} method. This method return an array of \texttt{Type} objects representing
-all the types in the assembly. We can then check each \texttt{Type} if it has an annotation for the node or relationship. We check this by using
-our custom extension methods for \texttt{Type}, \texttt{HasNodeAttribute} and \texttt{HasRelationshipEntityAttribute}. If the type has the annotation,
-we are going to add it to the right dictionary, which will be used during building the schema. We can see how this is done in the following code:
+We can now see how are the assemblies passed to the \texttt{DomainInfo} constructor. Inside this class, we are going through all the assemblies and scanning all classes obtained by the \texttt{Assembly.GetType} method.
+This method returns an array of \texttt{Type} objects representing all the types in the assembly.
+We then check each \texttt{Type} if it has an annotation for the node or relationship.
+Using our custom extension methods for the \texttt{Type} type, \texttt{HasNodeAttribute} and \texttt{HasRelationshipEntityAttribute}.
+If the type has the annotation, we will add it to the correct dictionary, which will be used while building the schema.
+We can see how this is done in the code example \ref{code:typeextensions}.
 
 \begin{listing}[H]
     \begin{minted}[
@@ -123,25 +128,28 @@ internal static bool HasRelationshipEntityAttribute(this Type type)
     \label{code:typeextensions}
 \end{listing}
 
-\subsection{\texttt{inline} keyword}
+\subsection{The \texttt{internal} keyword}
 
-Keen reader might caught it up, but in last two code examples \ref{code:metadataconstructor} and \ref{code:typeextensions} we used the keyword \texttt{internal}
+Keen reader might caught it up, but in the last code example \ref{code:typeextensions} we used the keyword \texttt{internal}
 as an access modifier to the defined methods. This access modifier makes methods, classes, and properties available only inside the assembly. More on this subject
-can be read at the official documentation of \CS\ language, URL: \url{https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/internal}.
+can be read in the official documentation of \CS\ language \cite{billwagner_internal_nodate}.
 
 \subsection {Building schema}
 
 Building schema is the last step in creating metadata for the client's domain model.
-We use \texttt{SchemaBuilder} class to build the schema. We need to pass the \texttt{DomainInfo} instance to the \texttt{SchemaBuilder} constructor.
+We use \texttt{SchemaBuilder} class to build the schema.
+We need to pass the \texttt{DomainInfo} instance to the \texttt{SchemaBuilder} constructor to use information obtained from scanning assemblies.
 At the start we create new \texttt{Schema} instance, which is our concrete implementation of \texttt{ISchema} interface.
 
-\texttt{SchemaBuilder.Build} method is responsible for building the schema. It does that by iterating over nodes and relationships and adding them to \texttt{Schema} instance
-using \texttt{ISchema.AddNode} and \texttt{ISchema.AddRelationship} methods. The resulting schema is then returned.
+\texttt{SchemaBuilder.Build} method is responsible for building the schema.
+It does that by iterating over nodes and relationships from the instance of \texttt{DomainInfo} class and adding them to \texttt{Schema} instance using \texttt{ISchema.AddNode}\linebreak and \texttt{ISchema.AddRelationship} methods.
+The resulting schema is then returned.
 
-We now have both schema and driver for creating the session. We will store both of them inside \texttt{SessionFactory} instance
-and use them every time the session is created. To help client's code to manage instances of \texttt{SessionFactory} we will create an extension
-of \texttt{IServiceCollection} which is a component of .NET responsible for managing the \acrfull{dic}. The lifetime of the \texttt{SessionFactory} is
-a singleton, meaning that only one instance will be created during the runtime of the application. The extension implementation is shown here \ref{code:collectionextension}.
+We now have both schema and driver for creating the session.
+We will store both of them inside \texttt{SessionFactory} instance and use them every time a new instance of \texttt{Session} is requested.
+To help client's code to manage instances of \texttt{SessionFactory} we will create an extension of \texttt{IServiceCollection} which is a component of .NET responsible for managing the \acrfull{dic}.
+The lifetime of the \texttt{SessionFactory} is a singleton, meaning that only one instance will be created during the runtime of the application.
+The extension implementation is shown in the code example \ref{code:collectionextension}.
 
 \begin{listing}[H]
     \begin{minted}[
@@ -176,12 +184,20 @@ goals from the beginning of this chapter.
 
 \subsection{\texttt{DbSet<T>}}
 
+\texttt{DbSet<T>} is a generic class that represents a set of entities of a given type. This concept is very similar to the \texttt{DbSet<T>} abstract class from the Entity Framework library.
+
 Inside the constructor of \texttt{DbSet<T>} class, we are going to set the correct provider as well as set an instance of \texttt{ISession}.
 Because we need an instance of \texttt{ISession} we are going to declare a method inside this interface called
 \texttt{ISession.Set<TEntity>} which will create a new instance
 of \texttt{DbSet<T>}.
 
 \section{Create or update nodes in a database}
+
+In the code example \ref{code:saveimpl} is an actual implementation of the save operation inside \texttt{ISession} concrete implementation.
+We are going to use the \texttt{EntityGraphMapper} class to map the entity/entities into a structure that will be translated into
+\texttt{IStatement} objects which represent statements that will be executed in the database. During mapping, we will also note the relationships between nodes
+using information from \texttt{MetaData} object we built for this purpose. This whole concept is borrowed from
+the official implementation of the Neo4j-\acrshort{ogm} library for Java.
 
 \begin{listing}[H]
     \begin{minted}[
@@ -224,20 +240,15 @@ public async Task SaveAsync<TEntity>(TEntity entity) where TEntity : class
     \label{code:saveimpl}
 \end{listing}
 
-From the snippet above \ref{code:saveimpl} is an actual implementation of the save operation inside \texttt{ISession} concrete implementation.
-We are going to use the \texttt{EntityGraphMapper} class to map the entity/entities into a structure that will be translated into
-\texttt{IStatement} objects which represent statements that will be executed in the database. During mapping, we will also note the relationships between nodes
-using information from \texttt{MetaData} object we built for this purpose. This whole concept is borrowed from
-the official implementation of the Neo4j-\acrshort{ogm} library for Java.
-
 \subsection{\texttt{EntityGraphMapper}}
 
-The \texttt{EntityGraphMapper} is responsible for mapping the entities that will be translated into Cypher, as was stated in the paragraph before.
-The resulting structure of this translation is saved inside a compiler context. The compiler context is a container for all the information
-used during mapping and generating Cypher queries. It tracks visited nodes as well as visited relationships.
+The \texttt{EntityGraphMapper} is responsible for mapping entities to builders that will be translated into Cypher, as was stated in the paragraph before.
+The resulting structure of this translation is saved inside a compiler context.
+The compiler context is a container for all the information used during mapping and generating Cypher queries.
+It tracks visited nodes as well as visited relationships.
 
-Inside the \texttt{ICompilerContext} is saved the instance of compiler, in this case it is \texttt{IMultiStatementCypherCompiler},
-which is responsible for generating create and update Cypher queries. This compiler is used inside the\linebreak\texttt{Session.ExecuteSave} method.
+Inside the \texttt{ICompilerContext} is saved the instance of compiler, in this case it is \texttt{IMultiStatementCypherCompiler}, which is responsible for generating create and update Cypher queries.
+This compiler is used inside the\linebreak\texttt{Session.ExecuteSave} method.
 
 \subsection{\texttt{IMultiStatementCypherCompiler}}
 
@@ -269,14 +280,14 @@ public interface IMultiStatementCypherCompiler
 \end{listing}
 
 This interface defines a set of methods needed for preparing and generating \texttt{IStatement} instances that will then be executed on the database.
-The \texttt{NodeBuilder} and \texttt{RelationshipBuilder} classes are what used inside\linebreak\texttt{EntityGraphMapper} and are the building blocks for
-\texttt{IStatement} instances.
+The \texttt{NodeBuilder} and \texttt{RelationshipBuilder} classes are created by\linebreak\texttt{EntityGraphMapper} and are the building blocks for \texttt{IStatement} instances.
 
 \subsection{\texttt{IStatement}}
 
-The \texttt{IStatement} was mentioned multiple times. It is a simple wrapper around a string containing the Cypher query and dictionary of parameters
-used in the query. These two values can then be used to generate \texttt{Query} object from Neo4j.Driver library. \texttt{Query} is used by
-Neo4j.Driver in their transaction implementation.
+The \texttt{IStatement} was mentioned multiple times.
+It is a simple wrapper around a string containing the Cypher query and dictionary of parameters used in the query.
+These two values can then be used to generate \texttt{Query} object from Neo4j.Driver library.
+\texttt{Query} is used by Neo4j.Driver in their transaction implementation.
 
 \section{Mapping LINQ to Cypher}
 
@@ -287,20 +298,20 @@ The process of mapping LINQ to Cypher can be divided into these steps:
     \item {map our expression tree into Cypher}
     \item {map result from database into result object.}
 \end{itemize}
-We will look at each step and show some of the implementations.
+We will look at each step and show some parts of the implementation.
 
 \subsection{Prepare LINQ query}
 
-Before we translate the query, we have to prepare our LINQ query. Preparation starts with the definition of the asynchronous method in the \texttt{DbSet<T>} class
-or the \texttt{IQueryable<T>} extension of an asynchronous method. The best example of this definition would be method \texttt{FindAsync} as it is defined
-in the \texttt{DbSet<T>} class, but it also uses an extension method for \texttt{IQueryable<T>} interface. The reason behind using asynchronous methods is
-the implementation of \texttt{IDriver} which has only asynchronous methods for working with transactions.
+Before we translate the query, we have to prepare our LINQ query.
+Preparation starts with the definition of the asynchronous method in the \texttt{DbSet<T>} class or the \texttt{IQueryable<T>} extension of an asynchronous method.
+The best example of this definition would be method \texttt{FindAsync} as it is defined in the \texttt{DbSet<T>} class, but it also uses an extension method for \texttt{IQueryable<T>} interface.
+The reason behind using asynchronous methods is the implementation of \texttt{IDriver} which has only asynchronous methods for working with transactions.
 
-Apart from the checks of the key values, the method will also create a lambda expression that will be translated into the \texttt{WHERE} statement
-in the Cypher query. This lambda expression is then passed to the \texttt{FirstOrDefaultAsync} method, which is an extension of the \texttt{IQueryable<T>} interface
-as we discussed above. The example below \ref{code:dbSetFindAsync} shows the exact implementation of the \texttt{DbSet<T>.FindAsync} method.
-Inside the extension method of\linebreak\texttt{FirstOrDefaultAsync}, we are calling the \texttt{IAsyncQueryProvider.ExecuteAsync<T>} method. This method
-is responsible for translation and execution of the query.
+Apart from the checks of key values, the method will also create a lambda expression that will be translated into the \texttt{WHERE} statement in the Cypher query.
+This lambda expression is then passed to the \texttt{FirstOrDefaultAsync} method, which is an extension of the \texttt{IQueryable<T>} interface as we discussed above.
+The code example \ref{code:dbSetFindAsync} shows the exact implementation of the \texttt{DbSet<T>.FindAsync} method.
+Inside the extension method of\linebreak\texttt{FirstOrDefaultAsync}, we are calling the \texttt{IAsyncQueryProvider.\linebreak ExecuteAsync<T>} method.
+This method is responsible for the translation and execution of the query. The translation is driven by our implementation of \texttt{ExpressionVisitor} abstract class.
 
 \begin{listing}[H]
     \begin{minted}[
@@ -337,9 +348,9 @@ public virtual Task<TEntity?> FindAsync(params object?[]? keyValues)
 
 \subsection{Expression visitors}
 
-Our goal is to create a custom expression tree that would copy a Cypher with additional information about the mapping of the result.
+Our goal is to create a custom expression tree representing the Cypher query translated from the LINQ source.
 
-First of all, we will introduce such classes to which we want to translate our LINQ expression tree \ref{fig:cypherexpression}.
+First of all, we will introduce classes to which we want to translate our LINQ expression tree \ref{fig:cypherexpression}.
 
 \begin{figure}[H]
     \centering
@@ -349,31 +360,34 @@ First of all, we will introduce such classes to which we want to translate our L
 \end{figure}
 
 To translate LINQ query to our custom expression tree, we will use the \texttt{QueryableMethodTranslationExpressionVisitor} class.
-This class implements the \texttt{ExpressionVisitor} abstract class from LINQ. Our query is starts as \texttt{QueryRootExpression} which is
-translated into \texttt{ShapedQueryExpression}. The \texttt{ShapedQueryExpression} contains the \texttt{MatchExpression} and\linebreak\texttt{EntityShaperExpression}
-expression. This translation is done inside\linebreak\texttt{VisitExtension} method which is called for each expression marked with \texttt{ExpressionType.Extension}
-as their \texttt{NodeType} property.
+This class implements the \texttt{ExpressionVisitor} abstract class from LINQ. Our query is starts as \texttt{QueryRootExpression} which is translated into \texttt{ShapedQueryExpression}.
+The \texttt{ShapedQueryExpression} contains the \texttt{MatchExpression} and\linebreak\texttt{EntityShaperExpression} expression.
+The \texttt{MatchExpression} represents the \texttt{MATCH} statement in the Cypher query and \texttt{EntityShaperExpression} is used for mapping the result of the query from the database.
+This translation is done inside\linebreak\texttt{VisitExtension} method which is called for each expression marked with \texttt{ExpressionType.Extension} as their \texttt{NodeType} property.
 
 To set up \texttt{MatchExpression}, we are using a method \texttt{VisitMethodCall} which visits the children of the \texttt{MethodCallExpression}.
-This method translates calls like \texttt{FirstOrDefault} from LINQ library. Inside this method the \texttt{WHERE} clause is translated as well
-as \texttt{MatchExpression} other properties like\linebreak\texttt{MatchPattern.Limit}. Also the \texttt{ReturnExpression} is created inside this method.
+This method translates calls like \texttt{FirstOrDefault} from LINQ library.
+Inside this method the \texttt{WHERE} clause is translated as well as \texttt{MatchExpression} other properties like\linebreak\texttt{MatchPattern.Limit}.
+Also, the \texttt{ReturnExpression} is created inside this method, which is equivalent to the \texttt{LIMIT} keyword inside the Cypher query.
 
-The result of \texttt{Visit} method is a \texttt{ShapedQueryExpression} which contains the \texttt{MatchExpression}
-with \texttt{ReturnExpression} and other predicates and expressions. This expression is now ready to be translated into Cypher query.
+The result of \texttt{Visit} method is a \texttt{ShapedQueryExpression} which contains the \texttt{MatchExpression} with \texttt{ReturnExpression} and other predicates and expressions.
+The \texttt{ShapedQueryExpression} is now ready to be translated into Cypher query.
 
-The visitor responsible for the actual translation to Cypher is\linebreak\texttt{CypherExpressionVisitor}. Inside this expression visitor,
-we declare methods that corresponds with our custom classes, like \texttt{VisitCypherBinary} or \texttt{VisitMatch}. Each of these methods translates part of the expression
-tree into a Cypher query. When the translation is done, the generated query is used in our custom enumerator, which enumerates the result from the database. This enumerator
-is implemented inside \texttt{QueryingEnumerable<T>} class.
+The visitor responsible for the actual translation to Cypher is\linebreak\texttt{CypherExpressionVisitor}.
+Inside this implementation of the\linebreak\texttt{ExpressionVisitor} abstarct class, we declare methods that corresponds with our custom classes, like \texttt{VisitCypherBinary} or \texttt{VisitMatch}.
+Each of these methods translates part of the expression tree into a Cypher query or calls further visits using the \texttt{CypherExpressionVisitor} class.
+When the translation is done, the generated query is used in our custom enumerator, enumerating the result from the database.
+This enumerator is implemented inside \texttt{QueryingEnumerable<T>} class.
 
-With the enumerator done, and the query generated, we need to execute our custom expression tree to get the result we want. To do this, we will use another visitor. In this case, this visitor needs to visit our\linebreak\texttt{ShapedQueryExpression} and create a right call that enumerates and returns the result.
-The name of the class is\linebreak\texttt{ShapedQueryCompilingExpressionVisitor} and it checks if the result should be resulting in a single value or collection.
-Inside, this visitor has also defined a custom lambda function, which will take the insides of\linebreak\texttt{ProjectionBindingExpression} and translate them to our result object.
+With the enumerator done, and the query generated, we need to build a lambda function which will return the result.
+To do this, we will use another visitor. In this case, this visitor needs to visit our\linebreak\texttt{ShapedQueryExpression} and create a right call that enumerates and returns the result.
+The name of the class is\linebreak\texttt{ShapedQueryCompilingExpressionVisitor} and it sets up the lambda function with use of the \texttt{ProjectionBindingExpression} to translate the \texttt{IRecord} result from the drivers library into our result object.
 
 \section{Summary}
 
-This chapter was about implementing the library we designed in the chapter before. We described the structure of our project and then implemented
-two critical goals of our proof-of-concept. With the first goal, we implemented the save operation for entities. We used metadata with information about graph
-schema to properly create nodes and relationships. The second goal was mapping LINQ to Cypher query and extracting results from the database structure; we had to implement our own expressions structure to transform the expression tree so that we would be able to translate it to Cypher query.
-
-
+This chapter was about implementing the library we designed in the chapter before.
+We described the structure of our project and then implemented two critical goals of our proof-of-concept.
+With the first goal, we implemented the save operation for entities.
+We used metadata with information about graph schema to properly create nodes and relationships.
+The second goal was mapping LINQ to Cypher query and extracting results from the database structure; we had to implement our own expressions structure to transform the expression tree so that we would be able to translate it to Cypher query.
+We accomplished both of our goals and are ready to introduce how we tested these goals.
