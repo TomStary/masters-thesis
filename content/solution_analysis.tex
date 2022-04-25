@@ -1,23 +1,23 @@
 \chapter {Design of OGM library}
 
-We should now have all information we need to propose our solution for OGM using the \CS\ language and .NET framework.
+We should now have all information we need to propose our solution for OGM using the \CS\ language and .NET platform.
 Before we start designing individual pieces of the library, we need to define a list of requirements that should the library meet.
 
 The solution should be able to:
 \begin{itemize}
-    \item {connect to a database}
-    \item {map objects into graph structure}
-    \item {map LINQ query into Cypher query}
-    \item {execute a command in a database}
-    \item {retrieve a result from the database}
-    \item {map the result from the database into objects}
+	\item {connect to a database}
+	\item {map objects into graph structure}
+	\item {map LINQ query into Cypher query}
+	\item {execute a command in a database}
+	\item {retrieve a result from the database}
+	\item {map the result from the database into objects}
 \end{itemize}
 
 With these minimal requirements set, we can now go through them, analyze them, and design individual solutions for them.
 
 \section{Connect to a database}
 
-Neo4j company has created a client for .NET that supports both "bolt" and "neo4j" URI schemes. \cite{neo4j_client_nodate}
+Neo4j company has created a client for .NET that supports both ``bolt'' and ``neo4j'' URI schemes. \cite{neo4j_client_nodate}
 This driver is a NuGet package, publicly accessible and licensed under Apache 2.0 license.
 This means we can use this driver in our library as a dependency.
 
@@ -27,10 +27,10 @@ During startup, the application should create an instance of the driver and then
 In the figure \ref{fig:components} is a visualisation of connections between components.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.4\textwidth]{content/components.png}
-    \caption{Components diagram}
-    \label{fig:components}
+	\centering
+	\includegraphics[width=0.4\textwidth]{content/components.png}
+	\caption{Components diagram}
+	\label{fig:components}
 \end{figure}
 
 We will use Neo4j's official driver for connection, but we need to encapsulate it into our library.
@@ -49,10 +49,10 @@ The end-user of our library must declare these assemblies as it would be slow fo
 To create a metadata object, we need to identify and process nodes and relationships.
 We need to have a way for end-users to describe each node and its relationship with all properties they want to define.
 
-We already have a solution to this problem, and Neo4j-\acrshort{ogm} uses it too to solve the same issue.
+We already have a solution to this problem, and Neo4j--\acrshort{ogm} uses it too to solve the same issue.
 We will use annotations using attributes to describe nodes and their relationships.
 
-We will look for these annotations during initialization using reflection, which is well supported by \CS\ and the .NET framework.
+We will look for these annotations during initialization using reflection, which is well supported by \CS\ and the .NET platform.
 With annotation, we can describe the graph and create the metadata object.
 
 \subsection {Entity mapper}
@@ -63,8 +63,8 @@ For this purpose, we will define a interface \texttt{IEntityMapper}. This interf
 this list of public methods:
 
 \begin{itemize}
-    \item {\texttt{Map}: this method map an entity to a \texttt{ICompilerContext}}
-    \item {\texttt{CompilerContext}: this method returns a current instance of\linebreak \texttt{ICompilerContext}}
+	\item {\texttt{Map}: this method map an entity to a \texttt{ICompilerContext}}
+	\item {\texttt{CompilerContext}: this method returns a current instance of\linebreak \texttt{ICompilerContext}}
 \end{itemize}
 
 In the picture \ref{fig:IEntityMapperClassDiagram} is class diagram showing entity mapper part of the library.
@@ -72,10 +72,10 @@ The interface \texttt{ICompilerContext} contains methods for controlling the con
 These methods are used during mapping an entity in the \texttt{IEntityMapper.Map} method.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{content/entitymapper.png}
-    \caption{\texttt{IEntityMapper} and \texttt{ICompilerContext} class diagrams}
-    \label{fig:IEntityMapperClassDiagram}
+	\centering
+	\includegraphics[width=0.8\textwidth]{content/entitymapper.png}
+	\caption{\texttt{IEntityMapper} and \texttt{ICompilerContext} class diagrams}
+	\label{fig:IEntityMapperClassDiagram}
 \end{figure}
 
 \section {Map LINQ query into Cypher query}
@@ -87,10 +87,10 @@ We can illustrate the process of transformation using the state diagram
 \ref{fig:querystate}.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{content/Expression transformation.png}
-    \caption{LINQ expression transformation}
-    \label{fig:querystate}
+	\centering
+	\includegraphics[width=0.5\textwidth]{content/Expression transformation.png}
+	\caption{LINQ expression transformation}
+	\label{fig:querystate}
 \end{figure}
 
 \subsection{\texttt{IQueryable} extension}
@@ -114,10 +114,10 @@ This is our entry point, from which we will start a translation of the expressio
 For better visualisation, here \ref{fig:queryprovider} is class diagram of query provider and\linebreak\texttt{DbSet<T>} class.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]{content/QueryProvider.png}
-    \caption{\texttt{IAsyncQueryProvider} and \texttt{DbSet<TEnity>} with extension class diagram}
-    \label{fig:queryprovider}
+	\centering
+	\includegraphics[width=0.9\textwidth]{content/QueryProvider.png}
+	\caption{\texttt{IAsyncQueryProvider} and \texttt{DbSet<TEnity>} with extension class diagram}
+	\label{fig:queryprovider}
 \end{figure}
 
 \subsection{Query compilation}
@@ -143,10 +143,10 @@ The last visitor is \texttt{ShapedQueryCompilinExpressionVisitor}, it is respons
 for taking a \texttt{ShapedQueryExpression} and translating it into a\linebreak \texttt{Expression.Call} expression, which can be then compiled into\linebreak the \texttt{Func<QueryContext, TResult>} object.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textheight, angle=-90]{content/Translation Sequence.png}
-    \caption{\texttt{QueryCompiler} compilation sequence}
-    \label{fig:QueryCompilerSequence}
+	\centering
+	\includegraphics[width=\textheight, angle=-90]{content/Translation Sequence.png}
+	\caption{\texttt{QueryCompiler} compilation sequence}
+	\label{fig:QueryCompilerSequence}
 \end{figure}
 
 \section{Execute a command and retrieve the result}
@@ -158,10 +158,10 @@ The \texttt{IResultCursor} interface declares methods as show on the \ref{fig:ir
 We are going to use these methods inside a proper implementation of \texttt{IAsyncEnumerable<T>} interface.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{content/IResultCursor.png}
-    \caption{\texttt{IResultCursor} and \texttt{IRecord} interfaces}
-    \label{fig:iresinterface}
+	\centering
+	\includegraphics[width=0.7\textwidth]{content/IResultCursor.png}
+	\caption{\texttt{IResultCursor} and \texttt{IRecord} interfaces}
+	\label{fig:iresinterface}
 \end{figure}
 
 \section{Map the result of the query to an object}
@@ -182,7 +182,7 @@ This method will return either a value or an entity.
 In this chapter, we designed a solution for an \acrshort{ogm} library in .NET with LINQ to Cypher translation.
 We started with defining six critical requirements that our library must solve and then went through each one and proposed a solution for them.
 
-We defined how we would handle creating a connection to the database using Neo4j's official driver for the .NET framework.
+We defined how we would handle creating a connection to the database using Neo4j's official driver for the .NET platform.
 Then we moved on to the problem of mapping objects into graph structure using annotations and reflection.
 We also proposed a solution for mapping LINQ queries to Cypher queries.
 At the end of the chapter, we went over the process of executions and mapping the Cypher query and its result into objects.

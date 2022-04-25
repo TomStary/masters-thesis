@@ -16,13 +16,8 @@
     The graph databases are made explicitly with relationships in mind.
     Every vertex can have its connection with another one or even itself.
     This kind of connection is not possible with a relational database where connecting two rows means creating a relationship between two tables.
-    To help with the performance of finding highly connected data, users can define indexes in relational databases, but there is only so much he can do.
-    Indexes can slow the whole system down, inserts will be longer, and the entire database will increase memory consumption.
 
     \subsection{What can graph databases offer?}
-
-    Graph databases are no silver bullet, and they cannot solve all our problems.
-    When designing a new piece of software, we should always ask ourselves what the best technologies for the situation we are trying to solve is.
 
     We have discussed the problem with highly connected data and long searches, but how does the graph database solve this issue?
     The key here is that we will sooner or later find out that with more data comes more time spent on the same select with a growing relational database.
@@ -39,8 +34,15 @@
     If we would like to use a mapper between a graph database and an object-oriented language, we would call it an \acrfull{ogm}. These types of mappers are not as widespread as \acrshort{orm}s are.
 
     In this thesis, we will go through the steps of creating the \acrshort{ogm} library for \CS.
-    We will start by studying graph databases and their query languages, studying similar solutions, namely EntityFramework.
-    With the knowledge from the previous chapters, we will propose a design for the \acrshort{ogm} library and implement a proof-of-concept.
-    In the end, we will evaluate our solutions a propose the next steps for future development.
+    Here is the outline of this thesis:
+    \begin{itemize}
+        \item {Analyze graph databases}
+        \item {Analyze Entity Framework and .NET platform}
+        \item {Analyze existing solutions for \acrshort{ogm} library}
+        \item {Design the library}
+        \item {Implement a proof-of-concept}
+        \item {Use \acrfull{tdd} to test the library}
+        \item {Evaluate the result and propose the next steps}
+    \end{itemize}
 
 \end{introduction}

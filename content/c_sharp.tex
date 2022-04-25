@@ -1,13 +1,13 @@
-\chapter {State of the art EntityFramework and .NET framework}
+\chapter {State of the art EntityFramework and .NET platform}
 
-If anyone wants to create \acrshort{orm} or \acrshort{ogm} for .NET in \CS, they should go through some principles that are used in EntityFramework and .NET framework.
+If anyone wants to create \acrshort{orm} or \acrshort{ogm} for .NET in \CS, they should go through some principles that are used in EntityFramework and .NET platform.
 This chapter will go through these principles with insight into the technologies used.
 
 \section {\CS}
 \CS\ is a general-purpose, type-safe, object-oriented programming language, the goal of which is programmer productivity.
 To this end, the language balances simplicity, expressiveness, and performance. \cite{albahari_c_2019}
 
-Microsoft has created and is developing the \CS\ language. When writing this thesis, the current version of the \CS\ is \CS10.
+Microsoft has created and is developing the \CS\ language. When writing this thesis, the current version of the \CS\ is \CS\ 10.
 
 The \CS\ code is statically compiled down to \acrlong{cil}. \acrshort{cil} cannot be run by itself on a machine.
 \acrshort{cil} runtime or \acrfull{clr} must be used.
@@ -17,12 +17,17 @@ The machine's processor can then read machine code. Using \acrshort{cil} and \ac
 \section {.NET}
 
 \textbf{.NET} is a framework written for \CS\ and other languages such as F\# and Visual Basic, which Microsoft also develops.
-In their own words: ".NET is an open-source developer platform, created by Microsoft, for building many different types of applications." \cite{microsoft_what_nodate}
+In their own words: ``.NET is an open-source developer platform, created by Microsoft, for building many different types of applications.'' \cite{microsoft_what_nodate}
 
-To compile a library or program with a .NET framework, developers must first download and install a .NET \acrfull{sdk}.
+The .NET went through many changes, and one of them was the introduction of the .NET Core version of the .NET platform.
+.NET Core is a cross-platform implementation of the .NET platform. At the same time, the .NET Framework was also developed, which was only supported on the Windows platform.
+The .NET Core and .NET Framework were merged in the .NET version 5.0.
+From this version on, and the .NET platform has only one version for the whole platform.
+
+To compile a library or program with a .NET platform, developers must first download and install a .NET \acrfull{sdk}.
 .NET \acrfull{sdk} is either a standalone \acrfull{cli} tool or embedded inside an \acrshort{ide}, for example, in Visual Studio from Microsoft.
 
-One part of the .NET framework we will need for any mapper will be a reflection.
+One part of the .NET platform we will need for any mapper will be a reflection.
 
 \subsection{Reflection}
 

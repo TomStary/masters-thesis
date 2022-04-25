@@ -55,14 +55,14 @@ Another benefit is that it will be possible to hide the concrete implementation 
 
 Implementation of \texttt{SessionFactory} is simple, we create a class with constructor accepts three parameters:
 \begin{itemize}
-    \item {\texttt{string connectionString} - contains connection string to the database}
-    \item {\texttt{IAuthToken token} - token created by \texttt{AuthTokens} class from Neo4j drivers library, used to authenticate connections to the database}
-    \item {\texttt{params Assembly[] assemblies} - assemblies containing domain models}
+    \item {\texttt{string connectionString} --- contains connection string to the database}
+    \item {\texttt{IAuthToken token} --- token created by \texttt{AuthTokens} class from Neo4j drivers library, used to authenticate connections to the database}
+    \item {\texttt{params Assembly[] assemblies} --- assemblies containing domain models}
 \end{itemize}
 Using the first two parameters, we can create \texttt{IDriver} instance, which will be used to create session instances. The third parameter is special
 because the type of the parameter is prefixed with keyword \texttt{params}. It means we can call the constructor with as many instances of \texttt{Assembly} as we want
 (we are limited only by language itself, which has a cap at $2^{14}$ parameters). From \CS\ documentation:
-"No additional parameters are permitted after the \texttt{params} keyword in a method declaration, and only one params keyword is permitted in a method declaration." \cite{wagner_params_nodate}
+``No additional parameters are permitted after the \texttt{params} keyword in a method declaration, and only one params keyword is permitted in a method declaration.'' \cite{wagner_params_nodate}
 
 The assemblies refer to where domain models are located;
 we need from the client's code information which assemblies to scan using reflection to pick up classes representing nodes and relationships.
@@ -197,7 +197,7 @@ In the code example \ref{code:saveimpl} is an actual implementation of the save 
 We are going to use the \texttt{EntityGraphMapper} class to map the entity/entities into a structure that will be translated into
 \texttt{IStatement} objects which represent statements that will be executed in the database. During mapping, we will also note the relationships between nodes
 using information from \texttt{MetaData} object we built for this purpose. This whole concept is borrowed from
-the official implementation of the Neo4j-\acrshort{ogm} library for Java.
+the official implementation of the Neo4j--\acrshort{ogm} library for Java.
 
 \begin{listing}[H]
     \begin{minted}[

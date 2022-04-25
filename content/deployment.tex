@@ -8,7 +8,7 @@ The primary source of packages for .NET applications is \url{https://www.nuget.o
 Every developer can upload their packages to this repository, and anyone can then search and download packages from this feed.
 
 Before uploading our library to the NuGet repository, we need to set our project properly.
-We can find out everything we need on the "Package authoring best practices" page in Microsoft's documentation. \cite{gill_package_2022}
+We can find out everything we need on the ``Package authoring best practices'' page in Microsoft's documentation. \cite{gill_package_2022}
 
 From the documentation page \cite{gill_package_2022} we know the properperties we need to set, here is their list:
 
@@ -29,9 +29,9 @@ It is also possible to run tasks on a schedule, like creating nightly builds of 
 
 We created three different workflows for our library, each for a different operation in \acrshort{vcs}. The operations are:
 \begin{itemize}
-    \item push - every push of new commits onto the GitHub server will trigger this workflow.
-    \item pull request - every new pull request to the main branch or update to the pull request will trigger this workflow.
-    \item release - each new tag in the main branch will trigger this workflow.
+    \item push --- every push of new commits onto the GitHub server will trigger this workflow.
+    \item pull request --- every new pull request to the main branch or update to the pull request will trigger this workflow.
+    \item release --- each new tag in the main branch will trigger this workflow.
 \end{itemize}
 These workflows will check our library's build status and the execution of the tests we wrote for our library.
 In the case of release, the workflow will also create a new version of our library and publish it to the NuGet repository.

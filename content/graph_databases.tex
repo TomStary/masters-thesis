@@ -1,7 +1,7 @@
 \chapter {State of the art of graph databases}
 
 The first thing we need to know about graph databases is their definition:
-"Graph databases store information in graphs, very similarly as relational databases store information in tables and have relations between columns in tables, graph databases store information in nodes and even on the edges, or as we should call them, relations." \cite{morgante_what_2021}
+``Graph databases store information in graphs, very similarly as relational databases store information in tables and have relations between columns in tables, graph databases store information in nodes and even on the edges, or as we should call them, relations.'' \cite{morgante_what_2021}
 
 To better show the power of graph databases, we will show it in a real-world example.
 Social networks dominate today's internet content, and everyone wants to be connected with his or her friends and relatives.
@@ -96,7 +96,7 @@ What is meant by that is how the database treats queries and how it handles stor
 Native databases use Index-free adjacency for processing.
 \cite{chao_graph_2018}
 
-\textbf{Index-free adjacency}: "Native graphs take data that is logically connected via arcs or relationships and hard-wire the physical RAM addresses of these items into the node." \cite{mccreary_neighborhood_2021}
+\textbf{Index-free adjacency}: ``Native graphs take data that is logically connected via arcs or relationships and hard-wire the physical RAM addresses of these items into the node.'' \cite{mccreary_neighborhood_2021}
 This information should answer to why are graph databases faster than other types of \acrshort{dbms} in searching related row, nodes or documents.
 In traditional \acrshort{rdbms}, looking up a row in another table means pulling an index table representing this relation and then finding a path to the row in said table.
 This behaviour leads to another problem in \acrshort{rdbms} because the database uses many indexes to keep data connected, which negatively impacts insert operations.
