@@ -171,11 +171,13 @@ We already know from \ref{fig:iresinterface} class diagram, that we can access a
 This interface represents a single result of the query, which is defined in Cypher using the \texttt{RETURN} clause.
 
 Our mapper needs to read the result and correctly choose the right key from the values.
-IRecord is not a representation of a single node or relationship, but it is a representation of the \texttt{RETURN} clause, meaning that it contains all the values of the \texttt{RETURN} clause.
+\texttt{IRecord} is not a representation of a single node or relationship, but it is a representation of the \texttt{RETURN} clause, meaning that it contains all the values of the \texttt{RETURN} clause.
 Mapper needs to know which key contains which entity and or value.
 
 We can solve this issue by creating an extension method that will extend an \texttt{IRecord} interface and accept a \texttt{string} parameter defining an alias of value.
 This method will return either a value or an entity.
+
+\pagebreak
 
 \section{Summary}
 
